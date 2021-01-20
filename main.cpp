@@ -14,7 +14,7 @@
 #include "read_files.hpp"
 #include "probability.hpp"
 #include "numerical.hpp"
-
+#include "KamLAND_anti.hpp"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ using namespace std;
 int main(int argc, const char * argv[]) {
 
     
-    vec true_params;
+  /*  vec true_params;
 
     double th12,th13,th23,del13,dm21,dm31;
     
@@ -56,7 +56,31 @@ int main(int argc, const char * argv[]) {
     
     Prob.Probability_curve(E_l, E_h, E_step,0,true);
 
-
+*/
+    
+    Event_generator Kamland;
+    Kamland.efficiency = 0.9;
+    Kamland.resolution[0] - 0.0;
+    Kamland.resolution[1] - 0.35;
+    Kamland.resolution[0] - 0.0;
+    
+    Kamland.e_min = 1.8;
+    Kamland.e_max = 10.0;
+    Kamland.n_bins = 50;
+    
+    Kamland.Init_evgen();
+    Kamland.generate_events();
+    
+    ofstream ofl;
+    ofl.open("test.dat");
+    
+    for(int i=0;i<Kamland.n_bins;i++)
+    {
+        ofl<<Kamland.bin_center[i]<<"\t"<<Kamland.Events[i]<<endl;
+        
+    }
+    
+    ofl.close();
     
 
     return 0;
