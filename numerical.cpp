@@ -54,12 +54,12 @@ int Cubic_interpolator::set_cubic_spline(vec data_x, vec data_y,bool logarithmic
             step0 = data_x[i+1]-data_x[i];
             step1 = data_x[i+2]-data_x[i+1];
             
-            if(fabs(step0-step1)>1e-16)
+      /*      if(fabs(step0-step1)>1e-16)
             {
                 std::cout<<"ERROR!! Cubic spline not valid for non-equispaced data!!\n";
                 exit(-1);
                 
-            }
+            }  */
             
 
         }
@@ -88,12 +88,12 @@ int Cubic_interpolator::set_cubic_spline(vec data_x, vec data_y,bool logarithmic
             step0 = data_x[i+1]-data_x[i];
             step1 = data_x[i+2]-data_x[i+1];
             
-            if(fabs(step0-step1)>1e-16)
+         /*   if(fabs(step0-step1)>1e-16)
             {
                 std::cout<<"ERROR!! Cubic spline not valid for non-equispaced data!!\n";
                 exit(-1);
                 
-            }
+            }  */
         }
         
         
