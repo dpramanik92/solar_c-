@@ -30,4 +30,15 @@ public:
     
 }
 
+class Branching_ratio
+{
+private:
+    std::string which_type;
+    
+public:
+    Branching_ratio(std::string);
+    double calc_branching(double);
+    
+}
+
 #endif /* interactions_hpp */

@@ -52,6 +52,54 @@ double weighted_differential::weighted_rate(double delta,double E_alpha,double E
 }
 
 
+
+Branching_ratio::Branching_ratio(std::string type_of_coupling)
+{
+    which_type = type_of_coupling;
+    
+    
+}
+
+double Branching_ratio::calc_branching(double delta)
+{
+    double Br;
+    
+    if(delta!=0)
+    {
+        
+        if(which_type=="Scalar")
+        {
+            double term1 = 1+sqr(delta)/(2.0*sqr(1+delta));
+            double term2 = 2.0*delta*log(delta)/(sqr(1+delta)*(1-sqr(delta)));
+            
+            Br = term1 + term2;
+        }
+        else if(which_type=="Pseudo")
+        {
+            double term1 = 1+sqr(delta)/(2.0*sqr(1-delta));
+            double term2 = 2.0*delta*log(delta)/(sqr(1-delta)*(1-sqr(delta)));
+            
+            Br = term1 + term2;
+            
+        }
+        else if(which_type=="mixed")
+        {
+            double term1 = 0.5;
+            double term2 = 2*sqr(delta)*log(delta)/(1-sqr(delta*delta));
+            
+            Br = term1 + term2;
+
+        }
+        
+        
+    }
+    
+    
+    
+    return Br;
+}
+
+
 double sqr(double x)
 {
     return x*x;
