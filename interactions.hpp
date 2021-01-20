@@ -14,8 +14,9 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cmath>
 
-typedef vector<double> vec;
+typedef std::vector<double> vec;
 
 double sqr(double );
 
@@ -28,7 +29,7 @@ public:
     weighted_differential(std::string);
     double weighted_rate(double,double,double);
     
-}
+};
 
 class Branching_ratio
 {
@@ -39,6 +40,6 @@ public:
     Branching_ratio(std::string);
     double calc_branching(double);
     
-}
+};
 
 #endif /* interactions_hpp */

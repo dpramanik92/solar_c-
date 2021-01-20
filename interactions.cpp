@@ -36,13 +36,17 @@ double weighted_differential::weighted_rate(double delta,double E_alpha,double E
             w = factor1*factor2*factor3;
             
         }
-        else if(which_type=="mixed")
+        else if(which_type=="Mixed")
         {
             double factor1 = 1.0/((1-sqr(delta*delta)));
             
             w = factor1*factor2*factor3;
         }
-        
+        else
+        {
+            std::cerr<<"ERROR!! Invalid option\n";
+            
+        }
         
     }
     
@@ -69,23 +73,23 @@ double Branching_ratio::calc_branching(double delta)
         
         if(which_type=="Scalar")
         {
-            double term1 = 1+sqr(delta)/(2.0*sqr(1+delta));
-            double term2 = 2.0*delta*log(delta)/(sqr(1+delta)*(1-sqr(delta)));
+            double term1 = (1.0+sqr(delta))/(2.0*sqr(1+delta));
+            double term2 = 2.0*sqr(delta)*log(delta)/(sqr(1+delta)*(1-sqr(delta)));
             
             Br = term1 + term2;
         }
         else if(which_type=="Pseudo")
         {
-            double term1 = 1+sqr(delta)/(2.0*sqr(1-delta));
-            double term2 = 2.0*delta*log(delta)/(sqr(1-delta)*(1-sqr(delta)));
+            double term1 = (1.0+sqr(delta))/(2.0*sqr(1-delta));
+            double term2 = 2.0*sqr(delta)*log(delta)/(sqr(1-delta)*(1-sqr(delta)));
             
             Br = term1 + term2;
             
         }
-        else if(which_type=="mixed")
+        else if(which_type=="Mixed")
         {
             double term1 = 0.5;
-            double term2 = 2*sqr(delta)*log(delta)/(1-sqr(delta*delta));
+            double term2 = 2.0*sqr(delta)*log(delta)/(1-sqr(delta*delta));
             
             Br = term1 + term2;
 
