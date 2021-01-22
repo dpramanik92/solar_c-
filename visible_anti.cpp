@@ -25,6 +25,21 @@ visible_anti_prob::~visible_anti_prob()
     
 }
 
+int visible_anti_prob::wrap_osc()
+{
+    osc_params[0] = atan(sqrt(Tan_Th12));
+    osc_params[1] = Th13;
+    osc_params[3] = Delta;
+    osc_params[4] = Dm21;
+    osc_params[6] = Tau;
+    
+    
+    return 0;
+    
+    
+    
+}
+
 visible_anti_prob::init_interpolate_flux()
 {
     flux.read_flux("flux/b8spec-2006.dat");

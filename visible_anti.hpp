@@ -55,6 +55,7 @@ public:
     int Decayed_Flux_curve(double,double,double,bool);
     int free_data();
     int Print_probability();
+    int Wrap_oscparams();
     
     
     
