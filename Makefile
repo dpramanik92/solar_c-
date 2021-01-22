@@ -8,7 +8,7 @@ TARGET = main
 
 SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp
 
-OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.hpp
+OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o
 
 all: $(TARGET)
 

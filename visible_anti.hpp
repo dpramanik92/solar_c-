@@ -19,33 +19,37 @@
 #include "numerical.hpp"
 #include "interactions.hpp"
 
+
+
 typedef std::vector<double> vec;
+
+double square(double);
 
 class visible_anti_prob
 {
 private:
     std::string which_type;
     vec *ff;
-    double *rhosol
+    double *rhosol;
     int init_interpolate_flux();
     Cubic_interpolator flux_interpolator;
     neutrino_data flux;
-    double Delta,E_max;
+    double E_max;
     double integrate();
     double integrand(double);
     int prob_inside_sun();
     double Propagation(double E);
 
 public:
+    double Tan_Th12,Th13,Dm21,Delta,Tau;
     vec E_vec;
     vec osc_params;
     std::string file_path;
     std::string outfile;
     double Energy;
     double P_ij;
-    double pday[8],p_after_decay[8],pnight[8][9];
+    double pday[8],p_after_decay[8],pnight[8][9],pmed[8];
     vec Prob;
-    double Prob;
     double L;
     visible_anti_prob(std::string type_name,double);
     ~visible_anti_prob();

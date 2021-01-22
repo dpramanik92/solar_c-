@@ -5,7 +5,7 @@
 //  Created by Dipyaman Pramanik on 19/01/21.
 //
 
-#include "visiible_anti.hpp"
+#include "visible_anti.hpp"
 #include "interactions.hpp"
 #include "probability.hpp"
 #include "read_files.hpp"
@@ -13,7 +13,7 @@
 #include <fstream>
 #include<cmath>
 
-visible_anti_prob::visiible_anti_prob(std::string type_name,double e_max)
+visible_anti_prob::visible_anti_prob(std::string type_name,double e_max)
 {
     which_type = type_name;
     E_max = e_max;
@@ -25,7 +25,7 @@ visible_anti_prob::~visible_anti_prob()
     
 }
 
-int visible_anti_prob::wrap_osc()
+int visible_anti_prob::Wrap_oscparams()
 {
     osc_params[0] = atan(sqrt(Tan_Th12));
     osc_params[1] = Th13;
@@ -40,7 +40,7 @@ int visible_anti_prob::wrap_osc()
     
 }
 
-visible_anti_prob::init_interpolate_flux()
+int visible_anti_prob::init_interpolate_flux()
 {
     flux.read_flux("flux/b8spec-2006.dat");
     
@@ -147,9 +147,9 @@ int visible_anti_prob::interpolate_data()
     return 0;
 }
 
-double visible_anti_prob::Propagation(double E);
+double visible_anti_prob::Propagation(double E)
 {
-    double Gamma_i = (E*osc_params[6]);
+    double Gamma_i = 1/(E*osc_params[6]);
     double p = (1.0-exp(-Gamma_i*L));
     P_ij = p;
     
@@ -200,19 +200,16 @@ int visible_anti_prob::Calculate_decayed_flux(vec E)
 
 double visible_anti_prob::integrand(double E)
 {
-    double res;
     
     prob_inside_sun();
     
-    double c13 = cos(osc_params[1]);
 
-    double c13_4 = c13*c13*c13*c13;
     
     weighted_differential W_rate(which_type);
     
     /*ONLY BORON IS BEING CONSIDERED FOR SIMPLICITY. LATER WE CAN ADD ALL SOURCES*/
     
-    double res = flux_interpolator.interpolate(E)*pday[4]*square(sin(osc_param[0]))*W_rate.weighted_rate(Delta,E,Energy);
+    double res = flux_interpolator.interpolate(E)*pday[4]*square(sin(osc_params[0]))*W_rate.weighted_rate(osc_params[3],E,Energy);
     
     
     
@@ -231,13 +228,18 @@ double visible_anti_prob::integrate()
 
 double visible_anti_prob::Calculate_decayed_flux(double E)
 {
+    Wrap_oscparams();
     
     Energy = E;
+    
+    double c13 = cos(osc_params[1]);
+
+    double c13_4 = c13*c13*c13*c13;
     
     double P_1e_earth = square(cos(osc_params[0]));
    
     
-    double Flux_dec = integrate()*Propagation(E)*P_1e_earth;
+    double Flux_dec = c13_4*integrate()*Propagation(E)*P_1e_earth;
     
     return Flux_dec;
 }
@@ -329,11 +331,11 @@ int visible_anti_prob::prob_inside_sun()
     return 0;
 }
 
-int visible_anti_prob::free_data();
+int visible_anti_prob::free_data()
 {
     delete[] ff;
     delete[] rhosol;
-    
+  /*
     for(int i=0;i<4;i++)
     {
         exp[i].clean_memory();
@@ -341,7 +343,7 @@ int visible_anti_prob::free_data();
     }
     
     delete[] exp;
-    
+    */
     return 0;
 }
 /*
@@ -350,3 +352,13 @@ int visible_anti_prob::Print_probability();
     return 0;
 }
 */
+
+
+
+
+
+double square(double x)
+{
+    return x*x;
+    
+}
