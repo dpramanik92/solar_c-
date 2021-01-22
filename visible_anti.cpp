@@ -13,14 +13,35 @@
 #include <fstream>
 #include<cmath>
 
-visible_anti_prob::visiible_anti_prob(std::string type_name)
+visible_anti_prob::visiible_anti_prob(std::string type_name,double e_max)
 {
     which_type = type_name;
+    E_max = e_max;
     
 }
 
 visible_anti_prob::~visible_anti_prob()
 {
+    
+}
+
+visible_anti_prob::init_interpolate_data()
+{
+    flux.read_flux("flux/b8spec-2006.dat");
+    
+    vec flux_x,flux_y;
+    
+    for(int i =0;i<flux.Flux.data[0].size();i++)
+    {
+        flux_x.push_back(flux.Flux.data[0][i]);
+        flux_y.push_back(flux.Flux.data[1][i]);
+        
+    }
+    
+    flux_interpolator.set_cubic_spline(flux_x,flux_y,false);
+    
+    return 0;
+    
     
 }
 
@@ -111,23 +132,23 @@ int visible_anti_prob::interpolate_data()
     return 0;
 }
 
-double visible_anti_prob::Propagation();
+double visible_anti_prob::Propagation(double E);
 {
-    double Gamma = osc_params[3];
+    double Gamma_i = (E*osc_params[6]);
     double p = (1.0-exp(-Gamma_i*L));
     P_ij = p;
     
     return p;
 }
 
-int visible_anti_prob::Calculate_probability(vec E)
+int visible_anti_prob::Calculate_decayed_flux(vec E)
 {
-    std::cout<<"Initializing Probability ...\n";
+    std::cout<<"Initializing Decayed Flux Calculator...\n";
     
     interpolate_data();
 //    read_regen();
 
-    std::cout<<"Calculating Probabilities ...\n";
+    std::cout<<"Calculating anti-neutrino flux profile due to visible decay ...\n";
     
     for(int i=0;i<E.size();i++)
     {
@@ -149,7 +170,7 @@ int visible_anti_prob::Calculate_probability(vec E)
     
     if(print_prob == 1)
     {
-        std::cout<<"Writing the probability output in files\n";
+        std::cout<<"Writing the anti-neutrino flux profile output in files\n";
       
         Print_probability();
         
@@ -175,7 +196,9 @@ double visible_anti_prob::integrand(double E)
     
     weighted_differential W_rate(which_type);
     
-    double res = func
+    /*ONLY BORON IS BEING CONSIDERED FOR SIMPLICITY. LATER WE CAN ADD ALL SOURCES*/
+    
+    double res = flux_interpolator.interpolate(E)*pday[4]*square(sin(osc_param[0]))*W_rate.weighted_rate(Delta,E,Energy);
     
     
     
@@ -183,29 +206,27 @@ double visible_anti_prob::integrand(double E)
     return res;
 }
 
-double visible_anti_prob::Calculate_probability(double E)
+double visible_anti_prob::integrate()
 {
-    double prob;
-    
-    Energy = E;
-   
-    
-    double w = integrand(E);
-    
-    for(int j=0;j<8;j++)
-    {
-        
-        
-    }
-    
-
     
     
-    
-    return prob;
+    return integral;
 }
 
-int visible_anti_prob::Probability_curve(double E_l,double E_h,double E_step,bool loga)
+double visible_anti_prob::Calculate_decayed_flux(double E)
+{
+    
+    Energy = E;
+    
+    double P_1e_earth = square(cos(osc_params[0]));
+   
+    
+    double Flux_dec = integrate()*Propagation(E)*P_1e_earth;
+    
+    return Flux_dec;
+}
+
+int visible_anti_prob::Decayed_Flux_curve(double E_l,double E_h,double E_step,bool loga)
 {
     
     

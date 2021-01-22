@@ -27,7 +27,15 @@ private:
     std::string which_type;
     vec *ff;
     double *rhosol
-    
+    int init_interpolate_flux();
+    Cubic_interpolator flux_interpolator;
+    neutrino_data flux;
+    double Delta,E_max;
+    double integrate();
+    double integrand(double);
+    int prob_inside_sun();
+    double Propagation(double E);
+
 public:
     vec E_vec;
     vec osc_params;
@@ -36,18 +44,15 @@ public:
     double Energy;
     double P_ij;
     double pday[8],p_after_decay[8],pnight[8][9];
-    double integrand(double);
     vec Prob;
     double Prob;
     double L;
-    visible_anti_prob(std::string type_name);
+    visible_anti_prob(std::string type_name,double);
     ~visible_anti_prob();
     int interpolate_data();
-    int Calculate_probability(vec);
-    double Calculate_probability(double);
-    double Propagation(double)
-    int Probability_curve(double,double,double,bool);
-    int prob_inside_sun();
+    int Calculate_decayed_flux(vec);
+    double Calculate_decayed_flux(double);
+    int Decayed_Flux_curve(double,double,double,bool);
     int free_data();
     int Print_probability();
     
