@@ -6,9 +6,9 @@ LIB = /usr/local/lib
 TARGET = main
 
 
-SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp
+SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp
 
-OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o
+OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.hpp
 
 all: $(TARGET)
 
@@ -37,6 +37,10 @@ KamLAND_anti.o: KamLAND_anti.cpp KamLAND_anti.hpp
 
 interactions.o: interactions.cpp interactions.hpp
 	$(CXX) $(CXXFLAGS) -c interactions.cpp
+
+visible_anti.o: visible_anti.cpp visible_anti.hpp
+	$(CXX) $(CXXFLAGS) -c visible_anti.cpp
+
 
 clear_obj:
 	rm -f *.o

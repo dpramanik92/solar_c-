@@ -25,7 +25,7 @@ visible_anti_prob::~visible_anti_prob()
     
 }
 
-visible_anti_prob::init_interpolate_data()
+visible_anti_prob::init_interpolate_flux()
 {
     flux.read_flux("flux/b8spec-2006.dat");
     
@@ -140,7 +140,7 @@ double visible_anti_prob::Propagation(double E);
     
     return p;
 }
-
+/*
 int visible_anti_prob::Calculate_decayed_flux(vec E)
 {
     std::cout<<"Initializing Decayed Flux Calculator...\n";
@@ -181,8 +181,7 @@ int visible_anti_prob::Calculate_decayed_flux(vec E)
     return 0;
 }
 
-/* We were writing here, it is not done. Import the Integration class next to do the
-integration over alpha. */
+*/
 
 double visible_anti_prob::integrand(double E)
 {
@@ -208,7 +207,9 @@ double visible_anti_prob::integrand(double E)
 
 double visible_anti_prob::integrate()
 {
+    double h = (E_max-Energy);
     
+    double integral= 3.0*h/8.0*(integrand(Energy)+3.0*integrand((2.0*Energy+E_max)/3.0)+3.0*integrand((Energy+2.0*E_max)/3.0)+integrand(E_max));
     
     return integral;
 }
@@ -328,8 +329,9 @@ int visible_anti_prob::free_data();
     
     return 0;
 }
-
+/*
 int visible_anti_prob::Print_probability();
 {
     return 0;
 }
+*/
