@@ -259,12 +259,6 @@ double integration_reconstruc::integrand(double x)
 
 
 
-double square(double x)
-{
-	double s = x*x;
-	return s;
-}
-
 
 double gauss(double x,double x0,double sigma)
 {

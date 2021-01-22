@@ -21,6 +21,9 @@
 
 typedef std::vector<double> vec;
 
+
+double square(double);
+
 class Cubic_interpolator
 {
 public:

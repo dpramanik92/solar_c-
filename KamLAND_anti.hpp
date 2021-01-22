@@ -26,7 +26,6 @@
 typedef std::vector<double> vec;
 
 double gauss(double,double,double);
-double square(double);
 
 
 class integration_true

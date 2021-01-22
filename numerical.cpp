@@ -463,3 +463,10 @@ int two_linear_interp::convert_logy()
     
     return 0;
 }
+
+
+double square(double x)
+{
+    return x*x;
+    
+}

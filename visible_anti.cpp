@@ -13,11 +13,14 @@
 #include <fstream>
 #include<cmath>
 
-visible_anti_prob::visible_anti_prob(std::string type_name,double e_max)
+visible_anti_prob::visible_anti_prob(std::string type_name,double e_max,int num_param)
 {
     which_type = type_name;
     E_max = e_max;
     
+    init_interpolate_flux();
+    interpolate_data();
+    osc_params = new double[num_param];
 }
 
 visible_anti_prob::~visible_anti_prob()
@@ -203,7 +206,7 @@ double visible_anti_prob::integrand(double E)
     
     prob_inside_sun();
     
-
+    
     
     weighted_differential W_rate(which_type);
     
@@ -211,7 +214,7 @@ double visible_anti_prob::integrand(double E)
     
     double res = flux_interpolator.interpolate(E)*pday[4]*square(sin(osc_params[0]))*W_rate.weighted_rate(osc_params[3],E,Energy);
     
-    
+
     
     
     return res;
@@ -335,6 +338,7 @@ int visible_anti_prob::free_data()
 {
     delete[] ff;
     delete[] rhosol;
+    delete osc_params;
   /*
     for(int i=0;i<4;i++)
     {
@@ -355,10 +359,3 @@ int visible_anti_prob::Print_probability();
 
 
 
-
-
-double square(double x)
-{
-    return x*x;
-    
-}
