@@ -16,7 +16,6 @@
 
 int Event_generator::Init_evgen()
 {
-		
 	
 	smearing_matrix=SOL_NO;
 	eff_vector=SOL_NO;
@@ -25,12 +24,15 @@ int Event_generator::Init_evgen()
 	res_stat=SOL_YES;
 
 	
-	create_bins();
-	//~ find_sigma();
-	//~ create_smearing_matrix();
-	
-	//init_interpolate_flux();
-	init_interpolate_cross();
+    create_bins();
+    //~ find_sigma();
+    //~ create_smearing_matrix();
+    
+    //init_interpolate_flux();
+    init_interpolate_cross();
+    
+
+
 	
 	
 	
@@ -38,6 +40,74 @@ int Event_generator::Init_evgen()
 	
 	return 0;
 	
+}
+
+int Event_generator::Init_fast_generator()
+{
+    sampling_space = (samp_max-samp_min)/double(n_samplings);
+    
+    for(int i = 0;i<n_samplings;i++)
+    {
+        double s;
+        samplings.push_back(s);
+                
+    }
+    
+    create_lookup_matrix();
+
+    
+    
+}
+
+int Event_generator::Set_fast_event_generator(int what,double _min,double _max,int _num)
+{
+    FAST_GEN = what;
+    
+    samp_min = _min;
+    samp_max = _max;
+    n_samplings = _num;
+    
+    
+    
+    
+    
+    return 0;
+}
+
+int Event_generator::create_lookup_matrix()
+{
+    
+    smear_mat = new double*[n_bins];
+    
+    for(int i=0;i<n_bins;i++)
+    {
+        smear_mat[i] = new double[n_samplings];
+        
+        
+    }
+    
+    for(int i=0;i<n_bins;i++)
+    {
+        
+        for(int j=0;j<n_samplings;j++)
+        {
+            integration_smear _smear(samplings[j],find_sigma(samplings[j]));
+            
+            integration _inte;
+            
+            double temp = _inte.trapezoidal<integration_smear,double>(_smear,bin_i[i],bin_f[i]);
+            std::cout<<temp<<std::endl;
+            
+            smear_mat[i][j] = cross_interpolator.interpolate(samplings[j])*temp;
+            
+            
+        }
+        
+    }
+    
+    
+    
+    return 0;
 }
 
 int Event_generator::Set_probability_engine(visible_anti_prob Prob)
@@ -69,26 +139,47 @@ int Event_generator::generate_events()
 {
 
 
+    if(FAST_GEN!=SOL_YES)
+    {
 	
-	for(int i=0;i<n_bins;i++)
-	{
+        for(int i=0;i<n_bins;i++)
+        {
 		
-		double Ei = bin_i[i];
-		double Ei_del = bin_f[i];
+            double Ei = bin_i[i];
+            double Ei_del = bin_f[i];
 		
-		find_sigma(bin_center[i]);
+            find_sigma(bin_center[i]);
 		
-		integration_reconstruc _inte_recons(Proba_engine,cross_interpolator,e_min,e_max,Sigma);
+            integration_reconstruc _inte_recons(Proba_engine,cross_interpolator,e_min,e_max,Sigma);
 		
-		integration _inte;
+            integration _inte;
 		
-		double ev = _inte.simpson_3_8<integration_reconstruc,double>(_inte_recons,Ei,Ei_del);
+            double ev = _inte.simpson_3_8<integration_reconstruc,double>(_inte_recons,Ei,Ei_del);
 		
-		Events.push_back(ev);
+            Events.push_back(ev);
 		
 		
 		
-	}
+        }
+    }
+    if(FAST_GEN == SOL_YES)
+    {
+        for(int i =0;i<n_bins;i++)
+        {
+            double sum = 0;
+            
+            for(int j=0;j<n_samplings;j++)
+            {
+                double term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j];
+                
+                sum  = sum + term;
+            }
+            
+            Events.push_back(sum);
+        }
+        
+        
+    }
 	
 	return 0;
 	
@@ -267,13 +358,31 @@ double integration_reconstruc::integrand(double x)
     }
     
 	integration _inte;
-	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,51);
+	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,numbers);
 	return res;
 }
 
 
 
+/*********************************************************************************************************************
+ *
+ *
+ *
+ * ******************************************************************************************************************/
 
+integration_smear::integration_smear(double _E, double _Sigma)
+{
+    Energy = _E;
+    Sigma = _Sigma;
+}
+
+double integration_smear::integrand(double E_p)
+{
+    double res = gauss(Energy,E_p,Sigma);
+    
+    return res;
+    
+}
 
 double gauss(double x,double x0,double sigma)
 {

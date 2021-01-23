@@ -35,21 +35,22 @@ int main(int argc, const char * argv[]) {
     
     _event.efficiency = 0.9;
     _event.resolution[0] = 0.0;
-    _event.resolution[1] = 0.05;
+    _event.resolution[1] = 0.25;
     _event.resolution[2] = 0.0;
     
     _event.e_min = 1.8;
     _event.e_max = E_max;
-    _event.n_bins = 50;
+    _event.n_bins = 100;
     
-    cout<<int((10-1.8)/0.05)<<endl;
     
     _event.Set_probability_engine(scalar);
     _event.Init_evgen();
+    _event.Set_fast_event_generator(SOL_YES,0,10,100);
+    _event.Init_fast_generator();
     _event.generate_events();
     
     ofstream ofl;
-    ofl.open("event_test.dat");
+    ofl.open("event_test1.dat");
     
     for(int i=0;i<_event.n_bins;i++)
     {

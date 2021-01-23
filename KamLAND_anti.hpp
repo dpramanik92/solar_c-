@@ -29,6 +29,17 @@ typedef std::vector<double> vec;
 double gauss(double,double,double);
 
 
+class integration_smear
+{
+private:
+    double Energy,Sigma;
+    
+public:
+    integration_smear(double,double);
+    double integrand(double);
+
+};
+
 class integration_true
 {
 	private:
@@ -92,7 +103,12 @@ class Event_generator
 		//~ Probability prob;
 		Cubic_interpolator flux_interpolator,cross_interpolator;
 		double create_bin_events(int);
+        int create_lookup_matrix();
+        double sampling_space;
         visible_anti_prob Proba_engine;
+        vec samplings;
+        double **lookup;
+        int FAST_GEN;
 	
 	public:
 		std::string flux_file,cross_file;
@@ -100,13 +116,16 @@ class Event_generator
 		vec true_osc_params,test_osc_params;
 		int smearing_matrix,eff_vector,Man_bins,sys_stat,res_stat;
         int Set_probability_engine(visible_anti_prob);
-		double efficiency, resolution[3],e_min,e_max,bin_w,n_bins;
-		//~ vec *smear_mat;
+        double efficiency, resolution[3],e_min,e_max,bin_w,samp_min,samp_max;
+        int n_bins,n_samplings;
+        double **smear_mat;
 		vec eff;
 		vec bin_center,bin_i,bin_f,manual_bins;
 		vec Events;
 		vec systematics;
 		int Init_evgen();
+        int Init_fast_generator();
+        int Set_fast_event_generator(int what,double,double,int);
 		int generate_events();
 		double Calc_prob(double);
 			
