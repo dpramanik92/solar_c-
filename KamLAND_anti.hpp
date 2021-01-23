@@ -18,6 +18,7 @@
 #include "read_files.hpp"
 #include "probability.hpp"
 #include "numerical.hpp"
+#include "visible_anti.hpp"
 
 
 #define SOL_YES 1
@@ -32,10 +33,10 @@ class integration_true
 {
 	private:
 	double emin,emax,Sigma,x0;
-	Cubic_interpolator Flux,Cross;
-	
+	Cubic_interpolator Cross;
+    visible_anti_prob Prob;
 	public:
-	integration_true(Cubic_interpolator,Cubic_interpolator,double,double);
+	integration_true(visible_anti_prob,Cubic_interpolator,double,double);
 	double integrand(double);
 	
 	
@@ -47,11 +48,11 @@ class integration_reconstruc
 {
 	private:
 	double emin,emax,Sigma;
-	Cubic_interpolator Flux,Cross;
-	
+	Cubic_interpolator Cross;
+    visible_anti_prob Prob;
 	
 	public:
-	integration_reconstruc(Cubic_interpolator,Cubic_interpolator,double,double,double);
+	integration_reconstruc(visible_anti_prob,Cubic_interpolator,double,double,double);
 	double integrand(double);
 	
 	

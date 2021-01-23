@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -g -Wall -std=c++14
 LIB = /usr/local/lib
 
-TARGET = main
+TARGET = event_main
 
 
 SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp

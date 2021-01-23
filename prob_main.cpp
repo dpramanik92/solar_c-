@@ -11,9 +11,6 @@
 #include <fstream>
 #include <cstring>
 
-#include "read_files.hpp"
-#include "probability.hpp"
-#include "numerical.hpp"
 #include "KamLAND_anti.hpp"
 #include "visible_anti.hpp"
 
@@ -34,22 +31,19 @@ int main(int argc, const char * argv[]) {
     scalar.Tau = 1e-5;
     scalar.L = 1.0;  /* Baseline in A.U. */
     
-    Event_generator _event;
-    
-    _event.efficiency = 0.9;
-    _event.resolution[0] = 0.0;
-    _event.resolution[1] = 0.35;
-    _event.resolution[2] = 0.0;
-    
-    _event.e_min = 1.8;
-    _event.e_max = E_max;
-    _event.n_bins = 50;
+    ofstream ofl;
+    ofl.open("prob_test.dat");
     
     
-    _event.Set_probability_engine(scalar);
-    _event.Init_evgen();
-    _event.generate_events();
+    for(double E= 1.8;E<16.0;E=E+0.01)
+    {
+        double P = scalar.Calculate_decayed_flux(E);
+        ofl<<E<<"\t"<<P<<endl;
+        
+        
+    }
     
+    ofl.close();
     
     
 

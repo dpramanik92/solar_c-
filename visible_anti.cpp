@@ -13,7 +13,7 @@
 #include <fstream>
 #include<cmath>
 
-visible_anti_prob::visible_anti_prob(std::string type_name,double e_max,int num_param)
+int visible_anti_prob::Init_prob(std::string type_name,double e_max,int num_param)
 {
     which_type = type_name;
     E_max = e_max;
@@ -21,6 +21,8 @@ visible_anti_prob::visible_anti_prob(std::string type_name,double e_max,int num_
     init_interpolate_flux();
     interpolate_data();
     osc_params = new double[num_param];
+    
+    return 0;
 }
 
 visible_anti_prob::~visible_anti_prob()

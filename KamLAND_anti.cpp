@@ -29,7 +29,7 @@ int Event_generator::Init_evgen()
 	//~ find_sigma();
 	//~ create_smearing_matrix();
 	
-	init_interpolate_flux();
+	//init_interpolate_flux();
 	init_interpolate_cross();
 	
 	
@@ -78,7 +78,7 @@ int Event_generator::generate_events()
 		
 		find_sigma(bin_center[i]);
 		
-		integration_reconstruc _inte_recons(flux_interpolator,cross_interpolator,e_min,e_max,Sigma);
+		integration_reconstruc _inte_recons(Proba_engine,cross_interpolator,e_min,e_max,Sigma);
 		
 		integration _inte;
 		
@@ -208,9 +208,9 @@ int Event_generator::init_interpolate_cross()
  * 
  * ******************************************************************************************************************/
 
-integration_true::integration_true(Cubic_interpolator _flux,Cubic_interpolator _cross,double e_p,double _sigma)
+integration_true::integration_true(visible_anti_prob _Prob,Cubic_interpolator _cross,double e_p,double _sigma)
 {
-	Flux = _flux;
+	Prob = _Prob;
 	Cross = _cross;
 	
 	x0 = e_p;
@@ -223,7 +223,7 @@ integration_true::integration_true(Cubic_interpolator _flux,Cubic_interpolator _
 
 double integration_true::integrand(double x)
 {
-	double res = Flux.interpolate(x)*Cross.interpolate(x)*gauss(x,x0,Sigma);
+    double res = Prob.Calculate_decayed_flux(x)*Cross.interpolate(x)*gauss(x,x0,Sigma);
 	
 	
 	
@@ -236,10 +236,10 @@ double integration_true::integrand(double x)
  * 
  * ******************************************************************************************************************/
 
-integration_reconstruc::integration_reconstruc(Cubic_interpolator _flux, Cubic_interpolator _cross, double _emin,double _emax,double _sigma)
+integration_reconstruc::integration_reconstruc(visible_anti_prob _Prob, Cubic_interpolator _cross, double _emin,double _emax,double _sigma)
 {
 	
-	Flux = _flux;
+	Prob = _Prob;
 	Cross = _cross;
 	
 	Sigma = _sigma;
@@ -254,13 +254,20 @@ double integration_reconstruc::integrand(double x)
 {
 	
 	
-	integration_true _inte_true(Flux,Cross,x,Sigma);
+	integration_true _inte_true(Prob,Cross,x,Sigma);
 	
-	emin = x-3.0*Sigma;
-	emax = x+3.0*Sigma;
+//	emin = x-3.0*Sigma;
+//	emax = x+3.0*Sigma;
 	
+    int numbers = int((emax-emin)/Sigma);
+    
+    if(numbers>50)
+    {
+        numbers=50;
+    }
+    
 	integration _inte;
-	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,9);
+	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,51);
 	return res;
 }
 

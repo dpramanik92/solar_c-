@@ -51,7 +51,7 @@ public:
     double pday[8],p_after_decay[8],pnight[8][9],pmed[8];
     vec Prob;
     double L;
-    visible_anti_prob(std::string type_name,double,int);
+    int Init_prob(std::string type_name,double,int);
     ~visible_anti_prob();
     int interpolate_data();
     int Calculate_decayed_flux(vec);
