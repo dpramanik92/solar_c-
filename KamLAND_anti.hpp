@@ -91,12 +91,14 @@ class Event_generator
 		//~ Probability prob;
 		Cubic_interpolator flux_interpolator,cross_interpolator;
 		double create_bin_events(int);
+        visible_anti_prob Proba_engine;
 	
 	public:
 		std::string flux_file,cross_file;
 		std::string file_path;
 		vec true_osc_params,test_osc_params;
 		int smearing_matrix,eff_vector,Man_bins,sys_stat,res_stat;
+        int Set_probability_engine(visible_anti_prob);
 		double efficiency, resolution[3],e_min,e_max,bin_w,n_bins;
 		//~ vec *smear_mat;
 		vec eff;

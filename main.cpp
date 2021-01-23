@@ -23,19 +23,19 @@ using namespace std;
 int main(int argc, const char * argv[]) {
 
     
-    visible_anti_prob scalar("Scalar",10.0,7);
+    visible_anti_prob scalar("Scalar",16.0,7);
     scalar.Tan_Th12 = 0.5;
     scalar.Th13 = 0.0;
     scalar.Dm21 = 7.5e-5;
     scalar.Delta = 0.05;
     scalar.Tau = 1e-5;
-    scalar.L = 1e6;
+    scalar.L = 1.0;  /* Baseline in A.U. */
     
-    for(double E = -2;E<log10(2);E=E+0.01)
+    for(double E = 0;E<16.0;E=E+0.01)
     {
-        double P = scalar.Calculate_decayed_flux(pow(10,E));
+        double P = scalar.Calculate_decayed_flux(E);
         
-        cout<<pow(10,E)<<"\t"<<P<<endl;
+        cout<<E<<"\t"<<P<<"\t"<<scalar.P_ij<<endl;
 
     }
     

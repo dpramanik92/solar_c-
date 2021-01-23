@@ -153,7 +153,7 @@ int visible_anti_prob::interpolate_data()
 double visible_anti_prob::Propagation(double E)
 {
     double Gamma_i = 1/(E*osc_params[6]);
-    double p = (1.0-exp(-Gamma_i*L));
+    double p = (1.0-exp(-Gamma_i*L*4.96e-6));
     P_ij = p;
     
     return p;
@@ -212,7 +212,7 @@ double visible_anti_prob::integrand(double E)
     
     /*ONLY BORON IS BEING CONSIDERED FOR SIMPLICITY. LATER WE CAN ADD ALL SOURCES*/
     
-    double res = flux_interpolator.interpolate(E)*pday[4]*square(sin(osc_params[0]))*W_rate.weighted_rate(osc_params[3],E,Energy);
+    double res = flux_interpolator.interpolate(E)*pmed[4]*W_rate.weighted_rate(osc_params[3],E,Energy);
     
 
     
@@ -242,7 +242,7 @@ double visible_anti_prob::Calculate_decayed_flux(double E)
     double P_1e_earth = square(cos(osc_params[0]));
    
     
-    double Flux_dec = c13_4*integrate()*Propagation(E)*P_1e_earth;
+    double Flux_dec = c13_4*integrate()*square(sin(osc_params[0]))*Propagation(E)*P_1e_earth;
     
     return Flux_dec;
 }

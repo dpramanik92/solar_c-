@@ -40,6 +40,14 @@ int Event_generator::Init_evgen()
 	
 }
 
+int Event_generator::Set_probability_engine(visible_anti_prob Prob)
+{
+    Proba_engine = Prob;
+    
+    return 0;
+}
+
+
 int Event_generator::find_sigma(double E)
 {
 	if(smearing_matrix!=SOL_YES)
