@@ -18,6 +18,8 @@ int visible_anti_prob::Init_prob(std::string type_name,double e_max,int num_para
     which_type = type_name;
     E_max = e_max;
     
+    n_of_params = num_param;
+    
     init_interpolate_flux();
     interpolate_data();
     osc_params = new double[num_param];

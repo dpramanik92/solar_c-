@@ -178,7 +178,7 @@ int Event_generator::generate_events()
                 double term = 0;
                 if(smear_mat[i][j]>1e-5)
                 {
-                    term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j];
+                    term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j]*sampling_space;
                 }
                 sum  = sum + term;
             }
@@ -234,6 +234,7 @@ int Event_generator::create_bins()
 	}
 	if(Man_bins == SOL_YES)
 	{
+        
 		for(int i=0;i<manual_bins.size()-1;i++)
 		{
 			
@@ -366,7 +367,7 @@ double integration_reconstruc::integrand(double x)
     }
     
 	integration _inte;
-	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,numbers);
+	double res = _inte.composite_simpson_3_8<integration_true,double,int>(_inte_true,emin,emax,100);
 	return res;
 }
 

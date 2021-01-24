@@ -43,6 +43,7 @@ private:
 public:
     double Tan_Th12,Th13,Dm21,Delta,Tau;
     vec E_vec;
+    int n_of_params;
     double *osc_params;
     std::string file_path;
     std::string outfile;
