@@ -20,6 +20,9 @@ using namespace std;
 int main(int argc, const char * argv[]) {
 
     
+    double val = atof(argv[1]);
+    string file_name = argv[2];
+    
     double E_max = 10.0;
     
     visible_anti_prob scalar;
@@ -28,14 +31,14 @@ int main(int argc, const char * argv[]) {
     scalar.Th13 = 0.0;
     scalar.Dm21 = 7.5e-5;
     scalar.Delta = 0.05;
-    scalar.Tau = 1e-5;
+    scalar.Tau = val;
     scalar.L = 1.0;  /* Baseline in A.U. */
     
     Event_generator _event;
     
     _event.efficiency = 0.9;
     _event.resolution[0] = 0.0;
-    _event.resolution[1] = 0.25;
+    _event.resolution[1] = 0.06;
     _event.resolution[2] = 0.0;
     
     _event.e_min = 1.8;
@@ -49,10 +52,10 @@ int main(int argc, const char * argv[]) {
     _event.Init_fast_generator();
     _event.generate_events();
     
-
+    cout<<"Writing output to "<<file_name<<endl;
     
     ofstream ofl;
-    ofl.open("event_test1.dat");
+    ofl.open(file_name);
     
     for(int i=0;i<_event.n_bins;i++)
     {
