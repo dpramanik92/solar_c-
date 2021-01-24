@@ -28,7 +28,7 @@ int Event_generator::Init_evgen()
     //~ find_sigma();
     //~ create_smearing_matrix();
     
-    //init_interpolate_flux();
+    init_interpolate_flux();
     init_interpolate_cross();
     
 
@@ -48,14 +48,14 @@ int Event_generator::Init_fast_generator()
     
     for(int i = 0;i<n_samplings;i++)
     {
-        double s;
+        double s=samp_min+(0.5+i)*sampling_space;;
         samplings.push_back(s);
                 
     }
     
     create_lookup_matrix();
 
-    
+    return 0;
     
 }
 
@@ -91,15 +91,18 @@ int Event_generator::create_lookup_matrix()
         
         for(int j=0;j<n_samplings;j++)
         {
-            integration_smear _smear(samplings[j],find_sigma(samplings[j]));
+            find_sigma(samplings[j]);
+            
+            integration_smear _smear(samplings[j],Sigma);
             
             integration _inte;
             
             double temp = _inte.trapezoidal<integration_smear,double>(_smear,bin_i[i],bin_f[i]);
-            std::cout<<temp<<std::endl;
+        //    std::cout<<temp<<std::endl;
             
             smear_mat[i][j] = cross_interpolator.interpolate(samplings[j])*temp;
             
+//            std::cout<<smear_mat[i][j]<<"\t"<<temp<<"\n";
             
         }
         
@@ -128,8 +131,10 @@ int Event_generator::find_sigma(double E)
 	
 		
 		Sigma = alpha*E+beta*sqrt(E)+ gamma ;
+
 	}
 	
+    
 	return 0;
 	
 }
@@ -170,8 +175,11 @@ int Event_generator::generate_events()
             
             for(int j=0;j<n_samplings;j++)
             {
-                double term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j];
-                
+                double term = 0;
+                if(smear_mat[i][j]>1e-5)
+                {
+                    term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j];
+                }
                 sum  = sum + term;
             }
             
@@ -378,8 +386,9 @@ integration_smear::integration_smear(double _E, double _Sigma)
 
 double integration_smear::integrand(double E_p)
 {
-    double res = gauss(Energy,E_p,Sigma);
     
+    
+    double res = gauss(Energy,E_p,Sigma);
     return res;
     
 }

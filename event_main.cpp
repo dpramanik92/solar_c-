@@ -40,14 +40,16 @@ int main(int argc, const char * argv[]) {
     
     _event.e_min = 1.8;
     _event.e_max = E_max;
-    _event.n_bins = 100;
+    _event.n_bins = 50;
     
     
     _event.Set_probability_engine(scalar);
     _event.Init_evgen();
-    _event.Set_fast_event_generator(SOL_YES,0,10,100);
+    _event.Set_fast_event_generator(SOL_YES,1.8,10,60);
     _event.Init_fast_generator();
     _event.generate_events();
+    
+
     
     ofstream ofl;
     ofl.open("event_test1.dat");
