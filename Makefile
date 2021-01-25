@@ -3,12 +3,12 @@ CXX = g++
 CXXFLAGS = -g -Wall -std=c++14
 LIB = /usr/local/lib
 
-TARGET = event_main
+TARGET = prob_main
 
 
-SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp
+SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp
 
-OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o
+OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o invisible_e.o
 
 all: $(TARGET)
 
@@ -38,8 +38,13 @@ KamLAND_anti.o: KamLAND_anti.cpp KamLAND_anti.hpp
 interactions.o: interactions.cpp interactions.hpp
 	$(CXX) $(CXXFLAGS) -c interactions.cpp
 
+
 visible_anti.o: visible_anti.cpp visible_anti.hpp
 	$(CXX) $(CXXFLAGS) -c visible_anti.cpp
+
+
+invisible_e.o: invisible_e.cpp invisible_e.hpp
+	$(CXX) $(CXXFLAGS) -c invisible_e.cpp
 
 
 clear_obj:

@@ -164,7 +164,6 @@ double Probability::Calculate_probability(double E,int time_in,int flav)
 {
     Energy = E;
     fin_flav = flav;
-    interpolate_data();
     prob_inside_sun();
     read_regen();
     regeneration_earth();
@@ -337,7 +336,8 @@ int Probability::prob_inside_sun()
     
     
     
-        double fmed[8];
+        double *fmed;
+        fmed = new double[8];
     
         for(int i=0;i<8;i++)
         {
@@ -388,7 +388,8 @@ int Probability::prob_inside_sun()
         for(int i=0;i<8;i++)
         {
             pmed[i] = pmed[i]/fmed[i];
-            pday[i] = s2_th13*s2_th13+(1-s2_th13)*(1-s2_th13)*pmed[i];
+            E_p_day.push_back(s2_th13*s2_th13+(1-s2_th13)*(1-s2_th13)*pmed[i]);
+            
     
         }
         
