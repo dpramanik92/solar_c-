@@ -19,6 +19,26 @@ Probability::~Probability()
     
 }
 
+int Probability::Init_probability_engine()
+{
+    interpolate_data();
+    
+    read_regen();
+    
+    pday = new double[8];
+    pmed = new double[8];
+    
+    pnight = new double*[8];
+    
+    for(int i=0;i<8;i++)
+    {
+        pnight[i] = new double[9];
+    }
+    
+    return 0;
+}
+
+
 /* ***********************************************************************************************************************/
 
 /* This function reads the solar density and production distribution data and interpolates for averaging out
@@ -85,8 +105,6 @@ int Probability::interpolate_data()
     prod_data_n_row = int(prod_data[0].size());
     
     ff = new vec[8];
-    std::ofstream ofil;
-    ofil.open("debug_data/test.dat");
 
     
     
@@ -100,8 +118,6 @@ int Probability::interpolate_data()
             double x = prod_data[0][i];
             ff[j].push_back(inter_prod[j+1].interpolate(fabs(x)));
        //     if(j==0)
-            ofil<<j<<"\t"<<inter_prod[j+1].interpolate(fabs(x))<<"\t"<<x<<"\n";
-
 
             
         }
@@ -160,12 +176,11 @@ int Probability::Probability_curve(double E_l, double E_h, double E_step, int fl
 
 
 
-double Probability::Calculate_probability(double E,int time_in,int flav)
+int Probability::Calculate_probability(double E,int time_in,int flav)
 {
     Energy = E;
     fin_flav = flav;
     prob_inside_sun();
-    read_regen();
     regeneration_earth();
 
         
@@ -335,7 +350,6 @@ int Probability::prob_inside_sun()
     
     
     
-    
         double *fmed;
         fmed = new double[8];
     
@@ -388,7 +402,8 @@ int Probability::prob_inside_sun()
         for(int i=0;i<8;i++)
         {
             pmed[i] = pmed[i]/fmed[i];
-            E_p_day.push_back(s2_th13*s2_th13+(1-s2_th13)*(1-s2_th13)*pmed[i]);
+            pday[i] = s2_th13*s2_th13+(1-s2_th13)*(1-s2_th13)*pmed[i];
+            P_day.push_back(pday[i]);
             
     
         }
@@ -532,6 +547,11 @@ int Probability::free_data()
         exp[i].clean_memory();
         
     }
+    
+    delete pday;
+    delete pmed;
+    
+    delete[] pnight;
     
     delete[] exp;
     

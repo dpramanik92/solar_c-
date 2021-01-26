@@ -6,9 +6,9 @@ LIB = /usr/local/lib
 TARGET = prob_main
 
 
-SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp
+SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp
 
-OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o invisible_e.o
+OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o
 
 all: $(TARGET)
 
@@ -46,6 +46,9 @@ visible_anti.o: visible_anti.cpp visible_anti.hpp
 invisible_e.o: invisible_e.cpp invisible_e.hpp
 	$(CXX) $(CXXFLAGS) -c invisible_e.cpp
 
+
+convers_prob.o: convers_prob.cpp convers_prob.hpp
+	$(CXX) $(CXXFLAGS) -c convers_prob.cpp
 
 clear_obj:
 	rm -f *.o

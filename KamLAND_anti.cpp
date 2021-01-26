@@ -278,7 +278,7 @@ int Event_generator::init_interpolate_flux()
 
 int Event_generator::init_interpolate_cross()
 {
-	cross.read_cross("cross_section/reactor.dat");
+	cross.read_cross("cross_section/XCCreactor.dat");
 	
 	
 	
@@ -323,7 +323,7 @@ integration_true::integration_true(visible_anti_prob _Prob,Cubic_interpolator _c
 
 double integration_true::integrand(double x)
 {
-    double res = Prob.Calculate_decayed_flux(x)*Cross.interpolate(x)*gauss(x,x0,Sigma);
+    double res = Prob.Calculate_decayed_flux(x)*Cross.interpolate(log10(x*1e-3))*gauss(x,x0,Sigma);
 	
 	
 	

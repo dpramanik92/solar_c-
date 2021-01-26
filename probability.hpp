@@ -25,7 +25,7 @@ private:
     regeneration *exp;
     int read_regen();
     int prod_data_n_row;
-    double pmed[8];
+    double *pmed;
     
     
 public:
@@ -39,10 +39,12 @@ public:
     double *rhosol;
     vec *ff;
     vec Prob;
-    double pday[8],pnight[8][9];
+    double *pday,**pnight;
+    vec P_day;
     ~Probability();
+    int Init_probability_engine();
     int interpolate_data();
-    double Calculate_probability(double,int,int);
+    int Calculate_probability(double,int,int);
     int Calculate_probability(vec,int);
     int Probability_curve(double,double,double,int,bool);
     int prob_inside_sun();
