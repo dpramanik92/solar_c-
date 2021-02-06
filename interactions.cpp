@@ -21,13 +21,16 @@ double weighted_differential::weighted_rate(double delta,double E_alpha,double E
     if(delta!=0)
     {
         double factor2 = 1.0/E_alpha;
-        double factor3 = (1+sqr(delta)-E_beta/E_alpha-sqr(delta)*E_alpha/E_beta);
+        double factor3 = (1.0+sqr(delta)-E_beta/E_alpha-sqr(delta)*E_alpha/E_beta);
+        
         
         if(which_type=="Scalar")
         {
-            double factor1 = 1.0/((1-sqr(delta))*sqr(1+delta));
+            double factor1 = 1.0/((1.0-sqr(delta))*sqr(1.0+delta));
             
             w = factor1*factor2*factor3;
+            
+            //~ std::cout<<E_alpha/E_beta<<"\t"<<factor3<<"\n";
         }
         else if(which_type=="Pseudo")
         {

@@ -39,6 +39,8 @@ private:
     int prob_inside_sun();
     int prod_data_n_row;
     double Propagation(double E);
+    int calculate_total_flux();
+    double x_max;
 
 public:
     double Tan_Th12,Th13,Dm21,Delta,Tau;
@@ -52,7 +54,7 @@ public:
     double pday[8],p_after_decay[8],pnight[8][9],pmed[8];
     vec Prob;
     double L;
-    int Init_prob(std::string type_name,double,int);
+    int Init_prob(std::string type_name,int);
     ~visible_anti_prob();
     int interpolate_data();
     int Calculate_decayed_flux(vec);

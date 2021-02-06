@@ -5,8 +5,8 @@
 //  Created by Dipyaman Pramanik on 21/11/20.
 //
 
-#ifndef KamLAND_anti_hpp
-#define KamLAND_anti_hpp
+#ifndef event_hpp
+#define event_hpp
 
 #include <iostream>
 #include <string>
@@ -19,6 +19,7 @@
 #include "probability.hpp"
 #include "numerical.hpp"
 #include "visible_anti.hpp"
+#include "convers_prob.hpp"
 
 
 #define SOL_YES 1
@@ -38,6 +39,18 @@ public:
     integration_smear(double,double);
     double integrand(double);
 
+};
+
+class integration_conv
+{
+	private:
+	double emin,emax,Sigma,x0;
+	Cubic_interpolator Cross,Flux;
+	converse Prob;
+
+	public:
+	integration_conv(converse,Cubic_interpolator,Cubic_interpolator,double,double,double);
+	double integrand(double);
 };
 
 class integration_true
@@ -109,6 +122,8 @@ class Event_generator
         vec samplings;
         double **lookup;
         int FAST_GEN;
+        double cross_max,flux_max;
+        double norm;
 	
 	public:
 		std::string flux_file,cross_file;
@@ -119,8 +134,9 @@ class Event_generator
         double efficiency, resolution[3],e_min,e_max,bin_w,samp_min,samp_max;
         int n_bins,n_samplings;
         double **smear_mat;
+        double Normalization,Exposure;
 		vec eff;
-		vec bin_center,bin_i,bin_f,manual_bins;
+		vec bin_center,bin_i,bin_f,manual_bins,manual_f;
 		vec Events;
 		vec systematics;
 		int Init_evgen();
@@ -132,6 +148,45 @@ class Event_generator
 	
 };
 
-#endif /* read_files_hpp */
+
+class conv_event
+{
+	private:
+		double smearing(double,double);
+		int init_interpolate_flux();
+		int init_interpolate_cross();
+		int create_bins();
+		int find_sigma(double);
+		double Sigma;
+		double Prob_E;
+		neutrino_data flux,cross;
+		Cubic_interpolator flux_interpolator,cross_interpolator;
+		double create_bin_events(int);
+		converse Proba_engine;
+		vec samplings;
+		double cross_max,flux_max;
+		
+	public:
+		double Exposure,norm,Normalization;
+		std::string flux_file,cross_file;
+		std::string file_path;
+		vec true_osc_params;
+		int smearing_matrix,eff_vector,Man_bins,sys_stat,res_stat;
+		int Set_probability_engine(converse);
+		double efficiency, resolution[3],e_min,e_max,bin_w,samp_min,samp_max;
+		int n_bins,n_samplings;
+		double **smear_mat;
+		vec eff;
+		vec bin_center,bin_i,bin_f,manual_bins,manual_f;
+		vec Events;
+		vec systematics;
+		int Init_evgen();
+		int generate_events();
+		
+	
+	
+};
+
+#endif /* event_hpp */
 
 

@@ -26,6 +26,7 @@ double square(double);
 
 class Cubic_interpolator
 {
+private:
 public:
     typedef boost::math::cubic_b_spline<double> interp;
     interp spline;

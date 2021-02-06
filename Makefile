@@ -4,20 +4,26 @@ CXXFLAGS = -g -Wall -std=c++14
 LIB = /usr/local/lib
 
 TARGET = prob_main
+TARGET1 = event_main
 
+SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp
 
-SRCS = numerical.cpp probability.cpp KamLAND_anti.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp
+OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o
 
-OBJS = $(TARGET).o numerical.o probability.o KamLAND_anti.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o
+all: $(TARGET) $(TARGET1)
 
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o  $(TARGET) $(OBJS)
+$(TARGET): $(TARGET).o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o  $(TARGET) $(TARGET).o $(OBJS)
 
 $(TARGET).o: $(TARGET).cpp $(SRCS)
 	$(CXX)  $(CXXFLAGS) -c $(TARGET).cpp -L$(LIB)
 
+
+$(TARGET1): $(TARGET1).o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o  $(TARGET1) $(TARGET1).o $(OBJS)
+
+$(TARGET1).o: $(TARGET1).cpp $(SRCS)
+	$(CXX)  $(CXXFLAGS) -c $(TARGET1).cpp -L$(LIB)
 
 numerical.o: numerical.cpp numerical.hpp
 	$(CXX) $(CXXFLAGS)  -c numerical.cpp -L$(LIB)
@@ -31,8 +37,8 @@ read_files.o: read_files.cpp read_files.hpp
 	$(CXX) $(CXXFLAGS) -c read_files.cpp
 
 
-KamLAND_anti.o: KamLAND_anti.cpp KamLAND_anti.hpp
-	$(CXX) $(CXXFLAGS) -c KamLAND_anti.cpp -L$(LIB)
+event.o: event.cpp event.hpp
+	$(CXX) $(CXXFLAGS) -c event.cpp -L$(LIB)
 
 
 interactions.o: interactions.cpp interactions.hpp
@@ -55,4 +61,4 @@ clear_obj:
 
 
 clean:
-	rm -f *.o *.out $(TARGET)
+	rm -f *.o *.out $(TARGET) $(TARGET1)

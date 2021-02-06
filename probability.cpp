@@ -181,7 +181,7 @@ int Probability::Calculate_probability(double E,int time_in,int flav)
     Energy = E;
     fin_flav = flav;
     prob_inside_sun();
-    regeneration_earth();
+    //~ regeneration_earth();
 
         
     return 0;

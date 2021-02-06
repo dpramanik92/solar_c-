@@ -11,16 +11,18 @@
 #include "read_files.hpp"
 #include "numerical.hpp"
 #include <fstream>
-#include<cmath>
+#include <cmath>
 
-int visible_anti_prob::Init_prob(std::string type_name,double e_max,int num_param)
+int visible_anti_prob::Init_prob(std::string type_name,int num_param)
 {
     which_type = type_name;
-    E_max = e_max;
     
     n_of_params = num_param;
     
     init_interpolate_flux();
+    
+    calculate_total_flux();
+    
     interpolate_data();
     osc_params = new double[num_param];
     
@@ -61,6 +63,10 @@ int visible_anti_prob::init_interpolate_flux()
     }
     
     flux_interpolator.set_cubic_spline(flux_x,flux_y,false);
+    
+    
+   	x_max = flux_x[flux_x.size()-2];
+
     
     return 0;
     
@@ -156,7 +162,12 @@ int visible_anti_prob::interpolate_data()
 
 double visible_anti_prob::Propagation(double E)
 {
+    
+    
     double Gamma_i = 1/(E*osc_params[6]);
+    
+    
+    
     double p = (1.0-exp(-Gamma_i*L*4.96e-6));
     P_ij = p;
     
@@ -205,6 +216,13 @@ int visible_anti_prob::Calculate_decayed_flux(vec E)
 
 */
 
+int visible_anti_prob::calculate_total_flux()
+{
+	
+	
+	return 0;
+}
+
 double visible_anti_prob::integrand(double E)
 {
     
@@ -216,7 +234,18 @@ double visible_anti_prob::integrand(double E)
     
     /*ONLY BORON IS BEING CONSIDERED FOR SIMPLICITY. LATER WE CAN ADD ALL SOURCES*/
     
-    double res = flux_interpolator.interpolate(E)*pmed[4]*W_rate.weighted_rate(osc_params[3],E,Energy);
+    double res;
+    
+    if(E<x_max)
+    {
+    
+		res = flux_interpolator.interpolate(E)*pmed[4]*W_rate.weighted_rate(osc_params[3],E,Energy);
+	}
+	else
+	{
+		res = 0.0;
+	}
+    //~ std::cout<<osc_params[3]<<"\n";
     
 
     
@@ -226,6 +255,9 @@ double visible_anti_prob::integrand(double E)
 
 double visible_anti_prob::integrate()
 {
+	E_max = Energy/square(osc_params[3]);
+	
+	
     double h = (E_max-Energy);
     
     double integral= 3.0*h/8.0*(integrand(Energy)+3.0*integrand((2.0*Energy+E_max)/3.0)+3.0*integrand((Energy+2.0*E_max)/3.0)+integrand(E_max));

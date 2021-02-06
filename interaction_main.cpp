@@ -61,7 +61,7 @@ int calculate_weighted(string file_name,string which_type,double delta,double E_
         double w = test.weighted_rate(delta,E_alpha,E_beta);
         
         
-        ofl<<E_beta/E_alpha<<"\t"<<w<<endl;
+        //~ ofl<<E_beta/E_alpha<<"\t"<<w<<endl;
     }
     
     ofl.close();
