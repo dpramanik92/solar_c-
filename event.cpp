@@ -514,7 +514,6 @@ int conv_event::generate_events()
         double Ei = bin_i[i]+1.0;
         double Ei_del = bin_f[i]+1.0;
 		
-
 		
 		if(res_stat==SOL_YES)
 		{

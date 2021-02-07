@@ -16,7 +16,7 @@
 #include <vector>
 #include <functional>
 #include <cmath>
-#include <boost/math/interpolators/cubic_b_spline.hpp>
+#include <boost/math/interpolators/cardinal_cubic_b_spline.hpp>
 #include <boost/math/interpolators/barycentric_rational.hpp>
 
 typedef std::vector<double> vec;
@@ -28,7 +28,7 @@ class Cubic_interpolator
 {
 private:
 public:
-    typedef boost::math::cubic_b_spline<double> interp;
+    typedef boost::math::interpolators::cardinal_cubic_b_spline<double> interp;
     interp spline;
     ~Cubic_interpolator();
     int free_cubic();
