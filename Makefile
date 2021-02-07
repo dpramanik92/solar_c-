@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 CXXFLAGS = -g -Wall -std=c++14
-LIB = /usr/local/lib
+LIB = /usr/local/lib 
 
 TARGET = prob_main
 TARGET1 = event_main
