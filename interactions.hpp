@@ -27,7 +27,7 @@ private:
     
 public:
     weighted_differential(std::string);
-    double weighted_rate(double,double,double);
+    double weighted_rate(double,double,double,int);
     
 };
 

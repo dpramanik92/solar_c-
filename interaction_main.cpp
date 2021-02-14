@@ -26,15 +26,15 @@ int main(int argc, char* argv[])
     Type[1] = "Pseudo";
     Type[2] = "Mixed";
     
-    string Delta[2]={"05","95"};
-    double delta_value[2] = {0.05,0.95};
+    string Delta[3]={"05","95","0.3"};
+    double delta_value[3] = {0.05,0.95,0.3};
     
     for(int i=0;i<3;i++)
     {
         string file_name2 = Type[i]+"_Br.dat";
         calculate_branching(file_name2,Type[i]);
         
-        for(int j=0;j<2;j++)
+        for(int j=0;j<3;j++)
         {
             string file_name1 = Type[i]+"_"+Delta[j]+"_w.dat";
 
@@ -61,7 +61,7 @@ int calculate_weighted(string file_name,string which_type,double delta,double E_
         double w = test.weighted_rate(delta,E_alpha,E_beta);
         
         
-        //~ ofl<<E_beta/E_alpha<<"\t"<<w<<endl;
+         ofl<<E_beta/E_alpha<<"\t"<<w<<endl;
     }
     
     ofl.close();

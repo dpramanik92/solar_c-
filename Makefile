@@ -6,9 +6,9 @@ LIB = /usr/local/lib
 TARGET = prob_main
 TARGET1 = event_main
 
-SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp
+SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp dec_probability.cpp
 
-OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o
+OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o dec_probability.o
 
 all: $(TARGET) $(TARGET1)
 
@@ -52,6 +52,10 @@ visible_anti.o: visible_anti.cpp visible_anti.hpp
 invisible_e.o: invisible_e.cpp invisible_e.hpp
 	$(CXX) $(CXXFLAGS) -c invisible_e.cpp
 
+
+
+dec_probability.o: dec_probability.cpp dec_probability.hpp
+	$(CXX) $(CXXFLAGS) -c dec_probability.cpp
 
 convers_prob.o: convers_prob.cpp convers_prob.hpp
 	$(CXX) $(CXXFLAGS) -c convers_prob.cpp

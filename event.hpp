@@ -21,7 +21,6 @@
 #include "visible_anti.hpp"
 #include "convers_prob.hpp"
 
-
 #define SOL_YES 1
 #define SOL_NO 0
 

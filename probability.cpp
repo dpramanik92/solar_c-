@@ -369,8 +369,8 @@ int Probability::prob_inside_sun()
         {
             double temp_rhosol = (1.-s2_th13)*pow(10,rhosol[i]);
 
-            double aa = temp_rhosol-0.25e-6*osc_params[4]/Energy*c_2th12;
-            double bb = 0.25e-6*osc_params[4]/Energy*s_2th12;
+            double aa = temp_rhosol-0.5e-6*osc_params[4]/Energy*c_2th12;
+            double bb = 0.5e-6*osc_params[4]/Energy*s_2th12;
             
             
             

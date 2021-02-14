@@ -239,7 +239,7 @@ double visible_anti_prob::integrand(double E)
     if(E<x_max)
     {
     
-		res = flux_interpolator.interpolate(E)*pmed[4]*W_rate.weighted_rate(osc_params[3],E,Energy);
+		res = flux_interpolator.interpolate(E)*pmed[4]*W_rate.weighted_rate(osc_params[3],E,Energy,-1);
 	}
 	else
 	{
