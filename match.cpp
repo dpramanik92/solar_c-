@@ -10,8 +10,9 @@
 #include <cmath>
 #include <fstream>
 #include <cstring>
+#include "convers_prob.hpp"
 #include "event.hpp"
-#include "dec_probability.hpp"
+//#include "dec_probability.hpp"
 #include "numerical.hpp"
 
 
@@ -24,23 +25,38 @@ typedef vector<double> vec;
 int main(int argc, const char * argv[]) {
 
     
+    //double val = atof(argv[1]);
+    //string file_name = argv[2];
     
     double E_max = 10.0;
+   
+    string Experiment = "SK-IV";
 
-    string Experiment = "Kamland";
-    
-    dec_prob scalar;
-    scalar.Tan_Th12 = 0*tan(33.56*(M_PI/180.0));
+    converse scalar;
+    scalar.Tan_th12 = tan(33.56*(M_PI/180.0));
     scalar.Th13 = 0.02;
     scalar.Dm21 = 7.5e-5;
-    scalar.Delta = 0.9;
-    scalar.Tau1 = 1e-1;
-    scalar.Tau2 = 1e-1;
+    scalar.conv = 3.6e-4;
     scalar.L = 1.0;  // Baseline in A.U. 
     scalar.Init_prob("Scalar",8);   
-    
+    scalar.oscillation = SOL_YES;    
 
-     Event_generator _event;
+
+    ofstream proba;
+
+    proba.open("test_flux.dat");
+
+    for(double E = 1.0;E<=16.0;E=E+0.01)
+    {
+        proba<<E<<"\t"<<scalar.Calculate_flux(E)<<endl;
+    }
+
+    proba.close();
+
+
+
+
+     conv_event _event;
     
      _event.resolution[0] = 0.0;
      _event.resolution[1] = 0.06;
@@ -56,8 +72,7 @@ int main(int argc, const char * argv[]) {
     
      file_reader exp_data,bkg_data;
 
-
-      
+     
 
      if(Experiment=="SK-IV")
      {
@@ -73,7 +88,7 @@ int main(int argc, const char * argv[]) {
 
         _event.efficiency = 0.05;
 
-        _event.Normalization = 20.0*1e-41*1e31;
+        _event.Normalization = 15.0*1e-41*1e31;
 
         _event.Exposure = Time*fiducial;
 
@@ -93,7 +108,7 @@ int main(int argc, const char * argv[]) {
 
         _event.efficiency = 0.85;
 
-        _event.Normalization = 3.3*1e-41*1e33;
+        _event.Normalization = 8.5*1e-41*1e32;
 
         _event.Exposure = Time*fiducial;
      }
@@ -109,11 +124,11 @@ int main(int argc, const char * argv[]) {
 
         double Time = 2485; /* days */
         Time = Time*86400;
-        double Np = 1.32e31; /* ktons */
+        double Np = 1.32e31; /* number of protons */
 
         _event.efficiency = 0.85;
 
-        _event.Normalization = 1.0*1e-41;
+        _event.Normalization = 30.0*1e-41;
 
         _event.Exposure = Time*Np;
      }
@@ -124,39 +139,39 @@ int main(int argc, const char * argv[]) {
      }
 
 
-
-    
-    for(int i=0;i<int(exp_data.data[0].size());i++)
-    {
-        _event.manual_bins.push_back(exp_data.data[0][i]);
-		_event.manual_f.push_back(exp_data.data[1][i]);
-    }
-    
-    
+     for( int i=0; i<int(exp_data.data[0].size()); i++)
+     {
+         _event.manual_bins.push_back(exp_data.data[0][i]);
+         _event.manual_f.push_back(exp_data.data[1][i]);
+     }
     
     _event.Man_bins = SOL_YES;
     
-    _event.Init_evgen(0,-1,3);
+    _event.Init_evgen();
     _event.res_stat = SOL_NO;
     _event.generate_events();  
     
+//    cout<<"Writing output to "<<file_name<<endl;
     
     ofstream ofl;
-    ofl.open("test_event_kam.dat");
+    ofl.open("test_event_SK.dat");
     
     double count = 0;
+    double bkg = 0;
      
     for(int i=0;i<_event.n_bins-2;i++)
     {
+        ofl<<_event.bin_i[i]<<"\t"<<_event.Events[i]+bkg_data.data[2][i]<<"\t"<<bkg_data.data[2][i]<<endl;
         cout<<_event.bin_i[i]<<"\t"<<_event.Events[i]+bkg_data.data[2][i]<<"\t"<<bkg_data.data[2][i]<<endl;
         
 
         count = count + _event.Events[i];
+        bkg = bkg + bkg_data.data[2][i];
     }
     
     ofl.close();
     
-    cout<<count<<endl;
+    cout<<count<<"\t"<<bkg<<endl;
     
 
     return 0;

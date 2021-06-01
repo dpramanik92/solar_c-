@@ -5,7 +5,7 @@
 //  Created by Dipyaman Pramanik on 21/11/20.
 //
 
-#include "probability.hpp"
+#include "dec_probability.hpp"
 #include "event.hpp"
 #include "read_files.hpp"
 #include "numerical.hpp"
@@ -14,14 +14,18 @@
 
 
 
-int Event_generator::Init_evgen()
+int Event_generator::Init_evgen(int flav,int parti, int channel)
 {
+
+    _flavour = flav;
+    _channel = channel;
+    _particle = parti;
 	
 	smearing_matrix=SOL_NO;
 	eff_vector=SOL_NO;
 	//Man_bins=SOL_NO;
 	sys_stat=SOL_YES;
-	res_stat=SOL_YES;
+//	res_stat=SOL_YES;
 	FAST_GEN = SOL_NO;
 	
 	norm = Normalization*Exposure;
@@ -124,7 +128,7 @@ int Event_generator::create_lookup_matrix()
     return 0;
 }
 
-int Event_generator::Set_probability_engine(visible_anti_prob Prob)
+int Event_generator::Set_probability_engine(dec_prob Prob)
 {
     Proba_engine = Prob;
     
@@ -153,6 +157,8 @@ int Event_generator::find_sigma(double E)
 
 int Event_generator::generate_events()
 {
+    
+    Events.clear();
 
 
 	if(res_stat==SOL_YES)
@@ -173,6 +179,10 @@ int Event_generator::generate_events()
 					find_sigma(bin_center[i]+1.0);
 		
 					integration_reconstruc _inte_recons(Proba_engine,cross_interpolator,e_min,e_max,Sigma);
+
+                    _inte_recons._channel = _channel;
+                    _inte_recons._flavour = _flavour;
+                    _inte_recons._particle = _particle;
 		
 					integration _inte;
 		
@@ -199,7 +209,7 @@ int Event_generator::generate_events()
 					double term = 0;
 					if(smear_mat[i][j]>1e-5)
 					{
-						term = Proba_engine.Calculate_decayed_flux(samplings[j])*smear_mat[i][j]*sampling_space;
+						term = Proba_engine.Calculate_decayed_flux(samplings[j],_flavour,_particle,_channel)*smear_mat[i][j]*sampling_space;
 					}
 					sum  = sum + term;
 				}
@@ -220,11 +230,13 @@ int Event_generator::generate_events()
 			if((log10(bin_center[i]*1e-3)<=cross_max) || (bin_center[i]<=flux_max))
 			{
 		
-				
-				double ev1 = Proba_engine.Calculate_decayed_flux(bin_i[i]+1.3)*cross_interpolator.interpolate(log10((bin_i[i]+1.3)*1e-3))*(bin_i[i]+1.3);
-				
-				double ev2 = Proba_engine.Calculate_decayed_flux(bin_f[i]+1.3)*cross_interpolator.interpolate(log10((bin_f[i]+1.3)*1e-3))*(bin_f[i]+1.3);
+			
 
+				double ev1 = Proba_engine.Calculate_decayed_flux(bin_i[i]+1.3,_flavour,_particle,_channel)*cross_interpolator.interpolate(log10((bin_i[i]+1.3)*1e-3))*(bin_i[i]+1.3);
+				
+				double ev2 = Proba_engine.Calculate_decayed_flux(bin_f[i]+1.3,_flavour,_particle,_channel)*cross_interpolator.interpolate(log10((bin_f[i]+1.3)*1e-3))*(bin_f[i]+1.3);
+
+                
 
 				ev = 0.5*(bin_f[i]-bin_i[i])*(ev1+ev2);
 			}
@@ -232,7 +244,8 @@ int Event_generator::generate_events()
 			{
 				ev = 0;
 			}
-		
+	
+//            std::cout<<norm*ev*efficiency<<"\n"; 
 		
 			Events.push_back(norm*ev*efficiency);
 		}
@@ -272,6 +285,8 @@ int Event_generator::create_bins()
 	{
 		bin_w = (e_max-e_min)/n_bins;
 		
+
+
 		for(int i=0;i<n_bins;i++)
 		{
 			bin_i.push_back(e_min+i*bin_w);
@@ -297,7 +312,7 @@ int Event_generator::create_bins()
 			
 		}
 		
-		n_bins = manual_bins.size();
+		n_bins = manual_bins.size()-1;
 		
 		e_min = manual_bins[0];
 		e_max = manual_f[manual_bins.size()-2];
@@ -310,7 +325,7 @@ int Event_generator::create_bins()
 
 int Event_generator::init_interpolate_flux()
 {
-	flux.read_flux("flux/b8spec-2006.dat");
+	flux.read_flux("flux/b8spectrum.txt");
 	
 	vec flux_x,flux_y;
 	
@@ -326,7 +341,7 @@ int Event_generator::init_interpolate_flux()
 	
 	flux_interpolator.set_cubic_spline(flux_x,flux_y,false);
 	
-	
+    return 0;	
 	
 }
 
@@ -353,6 +368,8 @@ int Event_generator::init_interpolate_cross()
 
 	
 	cross_interpolator.set_cubic_spline(cross_x,cross_y,false);
+
+    return 0;
 	
 }
 
@@ -388,7 +405,7 @@ int conv_event::Init_evgen()
 
 int conv_event::init_interpolate_flux()
 {
-	flux.read_flux("flux/b8spec-2006.dat");
+	flux.read_flux("flux/b8spectrum.txt");
 	
 	vec flux_x,flux_y;
 	
@@ -428,6 +445,8 @@ int conv_event::init_interpolate_cross()
 	}
 	
 	cross_max = cross_x[cross_x.size()-2];
+
+
 	
 	cross_interpolator.set_cubic_spline(cross_x,cross_y,false);
 	
@@ -538,16 +557,19 @@ int conv_event::generate_events()
         }
         if(res_stat==SOL_NO)
         {
-			if((log10((bin_center[i]+1.3)*1e-3)<=cross_max) && (bin_center[i]<=flux_max))
+			if((log10((bin_center[i]+0.7)*1e-3)<=cross_max) && (bin_center[i]<=flux_max))
 			{
 			
 			
-				double ev1 = Proba_engine.Calculate_probability(bin_i[i]+1.3)*flux_interpolator.interpolate(bin_i[i]+1.3)*cross_interpolator.interpolate(log10((bin_i[i]+1.3)*1e-3))*(bin_i[i]+1.3);
+				//double ev1 = 8.5e-4*Proba_engine.Calculate_probability(bin_i[i]+1.3)*flux_interpolator.interpolate(bin_i[i]+1.3)*cross_interpolator.interpolate(log10((bin_i[i]+1.3)*1e-3))*(bin_i[i]+1.3);
 				
-				double ev2 = Proba_engine.Calculate_probability(bin_f[i]+1.3)*flux_interpolator.interpolate(bin_f[i]+1.3)*cross_interpolator.interpolate(log10((bin_f[i]+1.3)*1e-3))*(bin_f[i]+1.3);
+				double ev1 = Proba_engine.Calculate_probability(bin_i[i]+0.7)*flux_interpolator.interpolate(bin_i[i]+0.7)*cross_interpolator.interpolate(log10((bin_i[i]+1.3)*1e-3))*(bin_i[i]+0.7);
+				
+                double ev2 = Proba_engine.Calculate_probability(bin_f[i]+0.7)*flux_interpolator.interpolate(bin_f[i]+0.7)*cross_interpolator.interpolate(log10((bin_f[i]+0.7)*1e-3))*(bin_f[i]+0.7);
 
 				double ev = 0.5*(bin_f[i]-bin_i[i])*(ev1+ev2);
-			
+		
+
 				Events.push_back(norm*ev*efficiency);
 			}
 			else
@@ -576,8 +598,14 @@ int conv_event::generate_events()
  * 
  * ******************************************************************************************************************/
 
-integration_true::integration_true(visible_anti_prob _Prob,Cubic_interpolator _cross,double e_p,double _sigma)
+integration_true::integration_true(dec_prob _Prob,Cubic_interpolator _cross,double e_p,double _sigma,int flav,int parti,int channel)
 {
+    
+    _flavour = flav;
+    _particle = parti;
+    _channel = channel;
+
+    
 	Prob = _Prob;
 	Cross = _cross;
 	
@@ -591,7 +619,7 @@ integration_true::integration_true(visible_anti_prob _Prob,Cubic_interpolator _c
 
 double integration_true::integrand(double x)
 {
-    double res = Prob.Calculate_decayed_flux(x)*Cross.interpolate(log10(x*1e-3))*x*gauss(x,x0,Sigma);
+    double res = Prob.Calculate_decayed_flux(x,_flavour,_particle,_channel)*Cross.interpolate(log10(x*1e-3))*x*gauss(x,x0,Sigma);
     
     
     //~ std::cout<<Prob.Calculate_decayed_flux(x)<<"\t"<<gauss(x,x0,Sigma)<<"\n";
@@ -607,7 +635,7 @@ double integration_true::integrand(double x)
  * 
  * ******************************************************************************************************************/
 
-integration_reconstruc::integration_reconstruc(visible_anti_prob _Prob, Cubic_interpolator _cross, double _emin,double _emax,double _sigma)
+integration_reconstruc::integration_reconstruc(dec_prob _Prob, Cubic_interpolator _cross, double _emin,double _emax,double _sigma)
 {
 	
 	Prob = _Prob;
@@ -625,7 +653,7 @@ double integration_reconstruc::integrand(double x)
 {
 	
 	
-	integration_true _inte_true(Prob,Cross,x,Sigma);
+	integration_true _inte_true(Prob,Cross,x,Sigma,_flavour,_particle,_channel);
 	
 //	emin = x-3.0*Sigma;
 //	emax = x+3.0*Sigma;
@@ -673,7 +701,8 @@ double integration_conv::integrand(double x)
 	double K_e = _inte.composite_simpson_3_8<integration_smear,double,int>(_inte_smear,emin,emax,51);
 	//~ std::cout<<x<<"\n";
 	double P = Prob.Calculate_probability(x);
-	
+
+
 	double res = P*Flux.interpolate(x)*Cross.interpolate(log10(x*1e-3))*x*K_e;
 	return res;
 }

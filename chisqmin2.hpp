@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef chisqmin_hpp
-#define chisqmin_hpp
+#ifndef chisqmin2_hpp
+#define chisqmin2_hpp
 
 #include <iostream>
 #include <string>
@@ -36,34 +36,23 @@ namespace chisq
             file_reader _exp_data,_bkg_data;
             Event_generator _event;
             int fin_flav,channel,particle;
-            int Init_chisq_calculator(Event_generator,file_reader,file_reader,int);
+            int Init_chisq_calculator(Event_generator,file_reader,file_reader);
     };
 
     class No_sys: public chisq_real
     {
         public:
-        int Init(Event_generator,file_reader,file_reader,int);
         double Calc_chi2_nosys(vec);
 
     };
 
     class SK_IV: public chisq_real
     {
-        private:
-            double norm_sig,norm_bkg,calib_sig,calib_bkg;
-            int binned_sys;
 
         public:
             double Calc_chi2_nosys(vec);
-            
-
             vec sigma;
-            int Set_binned_systematics(int);
-            int Set_sys(double,double,double,double);
-            int Init(Event_generator,file_reader,file_reader,int);
-            int expected_rates(vec);
             double Function(vec);
-            int statistics(vec);
             double pull_term(vec,vec);
             double pull_term(double,double);
 
@@ -75,9 +64,8 @@ namespace chisq
     class sys_minimizer
     {
         public:
-            double Minimize(detector,vec,vec);
 
-            vec position;
+            double Minimize(detector,vec,vec);
 
     };
 

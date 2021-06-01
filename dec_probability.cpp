@@ -13,6 +13,7 @@
 #include <string>
 
 
+
 int dec_prob::Init_prob(std::string type_name,int num_param)
 {
     which_type = type_name;
@@ -25,7 +26,7 @@ int dec_prob::Init_prob(std::string type_name,int num_param)
     
     calculate_total_flux();
     
-    interpolate_data();
+    interpolate_data(); 
     osc_params = new double[num_param];
     
     return 0;
@@ -56,7 +57,7 @@ int dec_prob::Wrap_oscparams()
 
 int dec_prob::init_interpolate_flux()
 {
-    flux.read_flux("flux/b8spec-2006.dat");
+    flux.read_flux("flux/b8spectrum.txt");
     
     vec flux_x,flux_y;
     
@@ -185,7 +186,12 @@ double dec_prob::Propagation(double E)
     
     
     double p = (1.0-exp(-Gamma_i*L*4.98e-4));
+
+
+
     P_ij = p;
+
+ //   std::cout<<Gamma_i*L*4.98e-4<<"\t"<<p<<"\n";
     
     return p;
 }
@@ -263,6 +269,7 @@ int dec_prob::calculate_total_flux()
 double dec_prob::integrand(double E)
 {
     pe2[4] = 0;
+    pe1[4] = 0;
     prob_inside_sun(E);
     
     double E_beta = Energy; 
@@ -287,7 +294,32 @@ double dec_prob::integrand(double E)
 */
     if(E<x_max)
     {
-		res = flux_interpolator.interpolate(E)*pe2[4]*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+        if(_channel==1)
+        {
+		    res = flux_interpolator.interpolate(E)*pe2[4]*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+        }
+        else if(_channel==2)
+        {
+		    res = flux_interpolator.interpolate(E)*pe2[4]*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+        }
+        else if(_channel==3)
+        {
+        
+     //       std::cout<<"Energy  =====  "<<E<<"\n";
+
+		    res = flux_interpolator.interpolate(E)*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+        }
+        else if (_channel==4)
+        {
+            res = flux_interpolator.interpolate(E)*pe2[4]*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+
+
+        }
+        else if(_channel==5)
+        {
+
+            res = flux_interpolator.interpolate(E)*pe1[4]*Propagation(E)*W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle);
+        }
        // std::cout<<w<<"\t"<<W_rate.weighted_rate(osc_params[3],E_alpha,E_beta,particle)<<"\n";
 	}
     else
@@ -310,10 +342,11 @@ double dec_prob::integrate()
         E_max = x_max;
     }
 	
+
     	
     double h = (E_max-Energy)/4.0;
     
- //   std::cout<<E_max<<"\t"<<Energy<<"\n\n";
+//    std::cout<<x_max<<"\t"<<E_max<<"\t"<<Energy<<"\n\n";
 
   //  double integral= 3.0*h/8.0*(integrand(Energy)+3.0*integrand((2.0*Energy+E_max)/3.0)+3.0*integrand((Energy+2.0*E_max)/3.0)+integrand(E_max));
 
@@ -335,6 +368,29 @@ double dec_prob::integrate()
 
 
 
+double dec_prob::integrate_flux()
+{
+    E_max = 14.8;
+
+    double E_min = 4.0;
+
+    double h = (E_max-E_min)/4.0;
+
+    double integral = (flux_interpolator.interpolate(E_min)+flux_interpolator.interpolate(E_max));
+
+    for( int i =0; i<3; i++)
+    {
+        double term = 2.0*(flux_interpolator.interpolate(E_min+(i+1)*h));
+        integral = integral + term;
+    }
+
+    return h/2.0*integral;
+ 
+
+
+}
+
+
 
 
 double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int channel)
@@ -343,6 +399,9 @@ double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int chan
 
     _channel = channel;
     
+
+ //   std::cout<<"Energy ============================="<<E<<"\n";
+
     Energy = E;
     particle = parti;
 
@@ -358,6 +417,12 @@ double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int chan
 
     double s13_4 = s13*s13*s13*s13;
     double c13_4 = c13*c13*c13*c13;
+
+    double s13_2 = s13*s13;
+    double c13_2 = c13*c13;
+
+    double s12_2 = s12*s12;
+    double c12_2 = c12*c12;
 
 
     double Flux_dec;
@@ -393,6 +458,8 @@ double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int chan
 
                 Flux_dec = flux_inv_prime + flux_vis + s13_4*flux_0;
 
+          //      std::cout<<flux_inv_prime<<"\t"<<flux_vis<<"\t"<<Propagation(E)<<"\t"<<survival(E)<<std::endl;
+
                 
             }
             if(parti==-1)
@@ -401,7 +468,7 @@ double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int chan
                 life = osc_params[7];   /* Lifetime for the deacy into anti-neutrino */
                  
         
-                double P_1e_earth = square(cos(osc_params[0]));
+                double P_1e_earth = c13_2*square(cos(osc_params[0]));
    
                 if(regeneration!=SOL_YES)
                 {
@@ -460,13 +527,107 @@ double dec_prob::Calculate_decayed_flux(double E,int fin_flav,int parti,int chan
             }
         }
     }
+    else if(channel==3)
+    {
+        if(fin_flav==0)
+        {
+            if(parti==1)
+            {
+                life = osc_params[6];
+
+                double P_inv_prime = pe1[4]*c12_2*c13_2+pe2[4]*c13_2*s12_2+s13_2*s13_2*survival(Energy);
+
+                double flux_0 = flux_interpolator.interpolate(Energy);
+
+                double flux_inv_prime = flux_0*P_inv_prime;
+
+
+                double flux_inv = c13_4*flux_inv_prime;
+
+
+                double c13_2_s13_2 = c13*c13*s13*s13;
+
+                double flux_vis;
+
+                if(regeneration!=SOL_YES)
+                {
+                    flux_vis = c13_2*s13_2*c12_2*integrate();
+                }
+
+                Flux_dec = flux_inv + flux_vis;
+
+
+
+            }
+ 
+            if(parti==-1)
+            {
+                life = osc_params[7];
+
+   
+             //   std::cout<<s13_2<<std::endl;
+
+                double P_1e_earth = c13_2*square(cos(osc_params[0]));
+
+                if(regeneration!=SOL_YES)
+                {
+
+                    Flux_dec = s13_2*integrate()*P_1e_earth;
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    else if(channel==4)
+    {
+        if(fin_flav==0)
+        {
+            if(parti==-1)
+            {
+                life= osc_params[7];
+
+
+                if(regeneration!=SOL_YES)
+                {
+                    Flux_dec = c13_2*integrate()*s13_2;
+
+                }
+
+            }
+
+        }
+
+    }
+    else if(channel==5)
+    {
+        if(fin_flav==0)
+        {
+            if(parti==-1)
+            {
+                life = osc_params[7];
+
+                if(regeneration!=SOL_YES)
+                {
+                    Flux_dec = c13_2*integrate()*s13_2;
+                }
+
+
+            }
+
+        }
+    }
+
     else
     {
         std::cout<<"ERROR!! Invalid Channel..."<<std::endl;
         exit(-1);
     }
 
-    Flux_dec = 8.5e-4*Flux_dec;
 
     return Flux_dec;
 }
@@ -540,9 +701,7 @@ int dec_prob::prob_inside_sun(double E)
 
 
         double pee = 0.5*(1+c_2tm*c_2th12);
-    //    std::cout<<aa<<"\t"<<bb<<"\n";
             
-        
 
     
         for(int j=0;j<8;j++)
@@ -565,6 +724,7 @@ int dec_prob::prob_inside_sun(double E)
     {
         pe1[i] = pe1med[i]/fmed[i];
         pe2[i] = pe2med[i]/fmed[i];
+
 
     }
     
@@ -598,6 +758,5 @@ int visible_anti_prob::Print_probability();
     return 0;
 }
 */
-
 
 

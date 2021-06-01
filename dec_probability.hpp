@@ -15,7 +15,6 @@
 #include <sstream>
 #include <vector>
 #include <functional>
-#include "event.hpp"
 #include "read_files.hpp"
 #include "numerical.hpp"
 #include "interactions.hpp"
@@ -23,6 +22,9 @@
 
 
 typedef std::vector<double> vec;
+
+#define SOL_NO 0
+#define SOL_YES 1
 
 
 class dec_prob
@@ -70,9 +72,12 @@ public:
     int regeneration;
     int Print_probability();
     int Wrap_oscparams();
-    
+    double integrate_flux();
     
     
 };
+
+
+
 
 #endif /* visiible_anti_hpp */

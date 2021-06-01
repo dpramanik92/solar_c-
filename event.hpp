@@ -16,7 +16,7 @@
 #include <vector>
 #include <functional>
 #include "read_files.hpp"
-#include "probability.hpp"
+#include "dec_probability.hpp"
 #include "numerical.hpp"
 #include "visible_anti.hpp"
 #include "convers_prob.hpp"
@@ -56,10 +56,11 @@ class integration_true
 {
 	private:
 	double emin,emax,Sigma,x0;
+    int _flavour,_particle,_channel;
 	Cubic_interpolator Cross;
-    visible_anti_prob Prob;
+    dec_prob Prob;
 	public:
-	integration_true(visible_anti_prob,Cubic_interpolator,double,double);
+	integration_true(dec_prob,Cubic_interpolator,double,double,int,int,int);
 	double integrand(double);
 	
 	
@@ -72,11 +73,12 @@ class integration_reconstruc
 	private:
 	double emin,emax,Sigma;
 	Cubic_interpolator Cross;
-    visible_anti_prob Prob;
+    dec_prob Prob;
 	
 	public:
-	integration_reconstruc(visible_anti_prob,Cubic_interpolator,double,double,double);
+	integration_reconstruc(dec_prob,Cubic_interpolator,double,double,double);
 	double integrand(double);
+    int _particle,_flavour,_channel;
 	
 	
 	
@@ -117,19 +119,19 @@ class Event_generator
 		double create_bin_events(int);
         int create_lookup_matrix();
         double sampling_space;
-        visible_anti_prob Proba_engine;
         vec samplings;
         double **lookup;
         int FAST_GEN;
         double cross_max,flux_max;
         double norm;
+        double _flavour,_particle,_channel;
 	
 	public:
 		std::string flux_file,cross_file;
 		std::string file_path;
 		vec true_osc_params,test_osc_params;
 		int smearing_matrix,eff_vector,Man_bins,sys_stat,res_stat;
-        int Set_probability_engine(visible_anti_prob);
+        int Set_probability_engine(dec_prob);
         double efficiency, resolution[3],e_min,e_max,bin_w,samp_min,samp_max;
         int n_bins,n_samplings;
         double **smear_mat;
@@ -138,12 +140,13 @@ class Event_generator
 		vec bin_center,bin_i,bin_f,manual_bins,manual_f;
 		vec Events;
 		vec systematics;
-		int Init_evgen();
+		int Init_evgen(int,int,int);
         int Init_fast_generator();
         int Set_fast_event_generator(int what,double,double,int);
 		int generate_events();
 		double Calc_prob(double);
 			
+        dec_prob Proba_engine;
 	
 };
 

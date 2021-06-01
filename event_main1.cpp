@@ -27,21 +27,22 @@ int main(int argc, const char * argv[]) {
     
     double E_max = 10.0;
 
-    string Experiment = "Kamland";
+    string Experiment = "SK-IV";
     
     dec_prob scalar;
-    scalar.Tan_Th12 = 0*tan(33.56*(M_PI/180.0));
+    scalar.Tan_Th12 = tan(33.56*(M_PI/180.0));
     scalar.Th13 = 0.02;
     scalar.Dm21 = 7.5e-5;
-    scalar.Delta = 0.9;
-    scalar.Tau1 = 1e-1;
-    scalar.Tau2 = 1e-1;
+    scalar.Delta = 0.0;
+    scalar.Tau1 = 1.2e-3;
+    scalar.Tau2 = 1.2e-3;
     scalar.L = 1.0;  // Baseline in A.U. 
     scalar.Init_prob("Scalar",8);   
     
 
      Event_generator _event;
     
+     _event.efficiency = 0.05;
      _event.resolution[0] = 0.0;
      _event.resolution[1] = 0.06;
      _event.resolution[2] = 0.0;
@@ -89,11 +90,11 @@ int main(int argc, const char * argv[]) {
 
         double Time = 2343; /* days */
         Time = Time*86400;
-        double fiducial = 1.0; /* ktons */
+        double fiducial = 0.705; /* ktons */
 
         _event.efficiency = 0.85;
 
-        _event.Normalization = 3.3*1e-41*1e33;
+        _event.Normalization = 26.5*1e-41*1e31;
 
         _event.Exposure = Time*fiducial;
      }
@@ -109,11 +110,11 @@ int main(int argc, const char * argv[]) {
 
         double Time = 2485; /* days */
         Time = Time*86400;
-        double Np = 1.32e31; /* ktons */
+        double Np = 1.32e30; /* ktons */
 
-        _event.efficiency = 0.85;
+        _event.efficiency = 0.92;
 
-        _event.Normalization = 1.0*1e-41;
+        _event.Normalization = 12.5*1e-41;
 
         _event.Exposure = Time*Np;
      }
@@ -136,22 +137,22 @@ int main(int argc, const char * argv[]) {
     
     _event.Man_bins = SOL_YES;
     
-    _event.Init_evgen(0,-1,3);
+    _event.Init_evgen(0,-1,1);
     _event.res_stat = SOL_NO;
     _event.generate_events();  
     
     
     ofstream ofl;
-    ofl.open("test_event_kam.dat");
+    ofl.open("test_event.dat");
     
     double count = 0;
      
     for(int i=0;i<_event.n_bins-2;i++)
     {
-        cout<<_event.bin_i[i]<<"\t"<<_event.Events[i]+bkg_data.data[2][i]<<"\t"<<bkg_data.data[2][i]<<endl;
+        ofl<<_event.bin_i[i]<<"\t"<<_event.Events[i]+bkg_data.data[2][i]<<"\t"<<bkg_data.data[2][i]<<endl;
         
 
-        count = count + _event.Events[i];
+        count = count + _event.Events[i]+bkg_data.data[2][i];
     }
     
     ofl.close();

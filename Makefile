@@ -5,12 +5,31 @@ LIB = /usr/local/lib
 
 TARGET = prob_main
 TARGET1 = event_main
+CHISQ = chi2_main
 
-SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp dec_probability.cpp
+TEST= match
 
-OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o dec_probability.o
+SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp visible_anti.cpp invisible_e.cpp convers_prob.cpp dec_probability.cpp chisqmin.cpp minimizer.cpp
 
-all: $(TARGET) $(TARGET1)
+OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o dec_probability.o chisqmin.o minimizer.o
+
+all: $(TARGET) $(TARGET1) $(TEST) $(CHISQ)
+
+
+
+$(CHISQ): $(CHISQ).o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(CHISQ) $(CHISQ).o $(OBJS)
+
+
+$(CHISQ).o: $(CHISQ).cpp $(OBJS)
+	$(CXX) $(CXXFLAGS) -c $(CHISQ).cpp -L$(LIB)
+
+$(TEST): $(TEST).o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TEST) $(TEST).o $(OBJS)
+
+
+$(TEST).o: $(TEST).cpp $(OBJS)
+	$(CXX) $(CXXFLAGS) -c $(TEST).cpp -L$(LIB)
 
 $(TARGET): $(TARGET).o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o  $(TARGET) $(TARGET).o $(OBJS)
@@ -59,6 +78,12 @@ dec_probability.o: dec_probability.cpp dec_probability.hpp
 
 convers_prob.o: convers_prob.cpp convers_prob.hpp
 	$(CXX) $(CXXFLAGS) -c convers_prob.cpp
+
+
+
+chisqmin.o: chisqmin.cpp chisqmin.hpp
+	$(CXX) $(CXXFLAGS) -c chisqmin.cpp
+
 
 clear_obj:
 	rm -f *.o

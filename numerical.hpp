@@ -28,6 +28,8 @@ class Cubic_interpolator
 {
 private:
 public:
+
+
     typedef boost::math::interpolators::cardinal_cubic_b_spline<double> interp;
     interp spline;
     ~Cubic_interpolator();

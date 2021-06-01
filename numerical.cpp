@@ -113,7 +113,17 @@ int Cubic_interpolator::set_cubic_spline(vec data_x, vec data_y,bool logarithmic
 
 double Cubic_interpolator::interpolate(double x)
 {
-    double p = spline(x);
+
+    double p = 0;
+    if(std::isnan(x)!=true && std::isinf(x)!=true)
+    {   
+        p = spline(x);
+    }
+    else
+    {
+        std::cout<<"WARNING!!Encountered infinity or NaN so set interpoalte to 0\n";
+    }
+
 
     return p;
 
