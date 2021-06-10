@@ -146,6 +146,7 @@ class Event_generator
 		int generate_events();
 		double Calc_prob(double);
 			
+        double resFunc(double,double);
         dec_prob Proba_engine;
 	
 };

@@ -81,6 +81,16 @@ int Event_generator::Set_fast_event_generator(int what,double _min,double _max,i
     return 0;
 }
 
+double Event_generator::resFunc(double E,double E_p)
+{
+    find_sigma(E);
+
+    double res = 1.0/(sqrt(2.0*M_PI)*Sigma)*exp(-0.5*((E-E_p)/Sigma)*((E-E_p)/Sigma));
+    return res;
+
+
+}
+
 int Event_generator::create_lookup_matrix()
 {
     
@@ -95,30 +105,16 @@ int Event_generator::create_lookup_matrix()
     
     for(int i=0;i<n_bins;i++)
     {
+        double h = (bin_f[i]-bin_i[i]);
+        double a = bin_i[i];
+        double b = bin_f[i];
         
         for(int j=0;j<n_samplings;j++)
         {
             find_sigma(samplings[j]);
             
-            integration_smear _smear(samplings[j],Sigma);
             
-            integration _inte;
-            
-            double temp = _inte.trapezoidal<integration_smear,double>(_smear,bin_i[i],bin_f[i]);
-        //    std::cout<<temp<<std::endl;
-            
-            if((log10(bin_center[i]*1e-3)<=cross_max) || (bin_center[i]<=flux_max))
-			{
-            
-				smear_mat[i][j] = cross_interpolator.interpolate(log10(samplings[j]*1e-3))*temp;
-            }
-            else
-            {
-				smear_mat[i][j] = 0;
-			}
-            
-//            std::cout<<smear_mat[i][j]<<"\t"<<temp<<"\n";
-            
+				smear_mat[i][j] = h/3.0*(resFunc(samplings[j],a)+3.0*resFunc(samplings[j],(a+2.0*b)/3.0)+3.0*resFunc(samplings[j],(2.0*a+b)/3.0)+resFunc(samplings[j],b));
         }
         
     }
@@ -207,11 +203,25 @@ int Event_generator::generate_events()
 				for(int j=0;j<n_samplings;j++)
 				{
 					double term = 0;
-					if(smear_mat[i][j]>1e-5)
-					{
-						term = Proba_engine.Calculate_decayed_flux(samplings[j],_flavour,_particle,_channel)*smear_mat[i][j]*sampling_space;
-					}
+//					if(smear_mat[i][j]>1e-5)
+//					{
+                        if((log10(samplings[j])*1e-3)<=cross_max || (samplings[j]<=flux_max))
+                        {
+    			    		term = Proba_engine.Calculate_decayed_flux((samplings[j]+1.3),_flavour,_particle,_channel)*cross_interpolator.interpolate(log10(samplings[j])*1e-3)*(samplings[j])*smear_mat[i][j]*sampling_space;
+
+
+    			    //		double term2 = Proba_engine.Calculate_decayed_flux((samplings[j+1]+1.3),_flavour,_particle,_channel)*cross_interpolator.interpolate(log10(samplings[j+1])*1e-3)*(samplings[j+1])*smear_mat[i][j];
+
+//                            term = 0.5*(term1+term2)*sampling_space;
+                  //          std::cout<<bin_center[i]<<"\t"<<samplings[j]<<"\t"<<term<<std::endl;
+                        }
+                        else
+                        {
+                            term = 0;
+                        }
+//					}
 					sum  = sum + term;
+
 				}
             
 				Events.push_back(norm*sum*efficiency);
@@ -239,6 +249,7 @@ int Event_generator::generate_events()
                 
 
 				ev = 0.5*(bin_f[i]-bin_i[i])*(ev1+ev2);
+
 			}
 			else
 			{

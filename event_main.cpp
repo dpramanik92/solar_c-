@@ -27,28 +27,27 @@ int main(int argc, const char * argv[]) {
     
     double E_max = 10.0;
 
-    string Experiment = "Kamland";
+    string Experiment = "Borexino";
     
     dec_prob scalar;
-    scalar.Tan_Th12 = 0*tan(33.56*(M_PI/180.0));
+    scalar.Tan_Th12 = tan(33.56*(M_PI/180.0));
     scalar.Th13 = 0.02;
     scalar.Dm21 = 7.5e-5;
     scalar.Delta = 0.9;
-    scalar.Tau1 = 1e-1;
-    scalar.Tau2 = 1e-1;
+    scalar.Tau1 = 1e-4;
+    scalar.Tau2 = 1e-4;
     scalar.L = 1.0;  // Baseline in A.U. 
-    scalar.Init_prob("Scalar",8);   
+    scalar.Init_prob("Pseudo",8);   
     
 
      Event_generator _event;
     
-     _event.resolution[0] = 0.0;
-     _event.resolution[1] = 0.06;
-     _event.resolution[2] = 0.0;
     
      _event.e_min = 1.8;
      _event.e_max = E_max;
      _event.n_bins = 100;
+
+     
     
 
     
@@ -56,7 +55,7 @@ int main(int argc, const char * argv[]) {
     
      file_reader exp_data,bkg_data;
 
-
+    
       
 
      if(Experiment=="SK-IV")
@@ -87,6 +86,10 @@ int main(int argc, const char * argv[]) {
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
 
+        _event.resolution[0]= 0.0;
+        _event.resolution[1]= 0.064;
+        _event.resolution[2] = 0.0;
+
         double Time = 2343; /* days */
         Time = Time*86400;
         double fiducial = 1.0; /* ktons */
@@ -100,12 +103,16 @@ int main(int argc, const char * argv[]) {
      else if(Experiment=="Borexino")
      {
          
+        _event.resolution[0]= 0.05;
+        _event.resolution[1]= 0.0;
+        _event.resolution[2] = 0.0;
 
         string data_file = "exp_data/Borexino_data.dat";
         string bkg_file = "exp_data/Borexino_bkg.dat";
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+
 
         double Time = 2485; /* days */
         Time = Time*86400;
@@ -137,12 +144,17 @@ int main(int argc, const char * argv[]) {
     _event.Man_bins = SOL_YES;
     
     _event.Init_evgen(0,-1,3);
-    _event.res_stat = SOL_NO;
-    _event.generate_events();  
+    _event.res_stat = SOL_YES;
+
+  //  _event.Set_probability_engine(scalar);
+    _event.Set_fast_event_generator(SOL_YES,1.8,13.0,30);
+    _event.Init_fast_generator();
+
+      _event.generate_events();  
     
     
     ofstream ofl;
-    ofl.open("test_event_kam.dat");
+    ofl.open("test_event_pseudo_bor_res.dat");
     
     double count = 0;
      
@@ -158,6 +170,8 @@ int main(int argc, const char * argv[]) {
     
     cout<<count<<endl;
     
+
+
 
     return 0;
 }

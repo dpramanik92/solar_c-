@@ -58,9 +58,9 @@ int main(int argc, const char * argv[]) {
      cout<<"The output is being written to: "<<file_name<<endl;
 
     dec_prob Prob;
-    Prob.Tan_Th12 = tan(33.56*(M_PI/180.0));
-    Prob.Th13 = 0.02;
-    Prob.Dm21 = 7.5e-5;
+    Prob.Tan_Th12 = pow(tan(33.44*(M_PI/180.0)),2.0);
+    Prob.Th13 = 0.022;
+    Prob.Dm21 = 7.42e-5;
     Prob.Delta = 0;
     Prob.Tau1 = 6.6e-3;
     Prob.Tau2 = 6.6e-3;
@@ -167,11 +167,11 @@ int main(int argc, const char * argv[]) {
 
      vec fit_params;
 
-     fit_params.push_back(0.31);
-     fit_params.push_back(0.02);
+     fit_params.push_back(Prob.Tan_Th12);
+     fit_params.push_back(0.022);
      fit_params.push_back(0);
      fit_params.push_back(0.9);
-     fit_params.push_back(7.5e-5);
+     fit_params.push_back(7.42e-5);
      fit_params.push_back(2.5e-3);
      fit_params.push_back(1e-4);
      fit_params.push_back(1e-4);
@@ -202,16 +202,16 @@ int main(int argc, const char * argv[]) {
      cout<<"Calculating chi2s...\n";
 
  //    cout.precision(4);
-   /*  for(double tau=-6;tau<=-1;tau=tau+0.1)
+     for(double tau=-6;tau<=-1;tau=tau+0.1)
      {
          fit_params[6] = pow(10,tau);
 
          for(double delt = 0.01;delt<=0.99;delt=delt+0.01)
          {
              fit_params[3] = delt;
-*/
-             double res = 100000000000.0;
 
+             double res = 100000000000.0;
+/*
              for(double the13=0.02;the13<0.024;the13=the13+0.0002)
              {
                  fit_params[1] = the13;
@@ -223,11 +223,11 @@ int main(int argc, const char * argv[]) {
                      for(double ldm=6.8;ldm<=8.0;ldm=ldm+0.04)
                      {
                          fit_params[4] = ldm*1e-5;
-
-                         double chi = _minimizer.Minimize(chi2,start_values,fit_params) + prior(the13,0.02221,0.0006)+prior(the12,33.44,0.78)+prior(ldm,7.42,0.21);
+*/
+                         double chi = _minimizer.Minimize(chi2,start_values,fit_params);// + prior(the13,0.02221,0.0006)+prior(the12,33.44,0.78)+prior(ldm,7.42,0.21);
 
                          res = min(res,chi);
-
+/*
                       cout<<pow(10,tau)<<"\t"<<delt<<"\t"<<the13<<"\t"<<the12<<"\t"<<ldm<<"\t"<<chi<<endl;
 
                      }
@@ -237,11 +237,11 @@ int main(int argc, const char * argv[]) {
                  
 
              }
-
+*/
              cout<<pow(10,tau)<<"\t"<<delt<<"\t"<<res<<endl;
              ofl<<pow(10,tau)<<"\t"<<delt<<"\t"<<res<<endl;
-  //       }
-  //   }
+         }
+     }
 
 
 /*

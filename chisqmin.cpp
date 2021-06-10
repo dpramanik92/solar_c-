@@ -125,7 +125,6 @@ double chisq::SK_IV::Calc_chi2_nosys(vec params)
 
     
 
-
     _event.Proba_engine.L = 1.0;
 
 
@@ -138,15 +137,14 @@ double chisq::SK_IV::Calc_chi2_nosys(vec params)
     
         
 
-    for(int i = 0;i<4;i++)
+    for(int i = 0;i<_event.n_bins;i++)
     {
         double expected_rate = _event.Events[i]+_bkg_data.data[2][i];
-
+        
         
         res = res + poiss_likelihood(expected_rate,_exp_data.data[2][i]);
     }
     
-
 
     return res;
 }
@@ -469,10 +467,15 @@ double chisq::gauss_likelihood(double n_test,double n_true)
 
 double chisq::poiss_likelihood(double n_test,double n_true)
 {
-
-
-    double res = 2*(n_test-n_true+n_true*log(n_true/n_test)); 
-
+    double res;
+    if(n_true>0)
+    {
+        res = 2*(n_test-n_true+n_true*log(n_true/n_test)); 
+    }   
+    else
+    {
+        res = 2*n_test;
+    }
     return res;
 }
 
