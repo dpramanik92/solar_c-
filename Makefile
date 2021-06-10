@@ -1,11 +1,16 @@
 CC = gcc
 CXX = g++
-CXXFLAGS = -g -Wall -std=c++14
+CXXFLAGS = -g -fPIC -Wall -O2 -std=c++14
 LIB = /usr/local/lib
+LDFLAGS = -shared
+
+TARGET_LIB = libchi2.so
 
 TARGET = prob_main
 TARGET1 = event_main
 CHISQ = chi2_main
+CHI_PY = chi2_py
+
 
 TEST= match
 
@@ -13,9 +18,16 @@ SRCS = numerical.cpp probability.cpp event.cpp read_files.cpp interactions.cpp v
 
 OBJS = numerical.o probability.o event.o read_files.o interactions.o visible_anti.o invisible_e.o convers_prob.o dec_probability.o chisqmin.o minimizer.o
 
-all: $(TARGET) $(TARGET1) $(TEST) $(CHISQ)
+.PHONY: all
+
+all: $(TARGET) $(TARGET1) $(TEST) $(CHISQ) $(CHI_PY) $(TARGET_LIB)
+
+$(TARGET_LIB): $(OBJS) $(CHI_PY).o 
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 
+$(CHI_PY): $(CHI_PY).o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(CHI_PY) $(CHI_PY).o $(OBJS)
 
 $(CHISQ): $(CHISQ).o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(CHISQ) $(CHISQ).o $(OBJS)
@@ -83,6 +95,7 @@ convers_prob.o: convers_prob.cpp convers_prob.hpp
 
 chisqmin.o: chisqmin.cpp chisqmin.hpp
 	$(CXX) $(CXXFLAGS) -c chisqmin.cpp
+
 
 
 clear_obj:
