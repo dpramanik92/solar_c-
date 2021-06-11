@@ -9,6 +9,17 @@ lib = cdll.LoadLibrary('./libchi2.so')
 class solchi2(object):
     def __init__(self):
         print(" Initializing ... ")
+        
+    def Set_resolution(self,what,samp_min,samp_max,samp_num):
+        lib.solSetRes.argtypes = [ctypes.c_int,ctypes.c_double,ctypes.c_double,ctypes.c_int]
+        if(what=='SOL_YES'):
+            lib.solSetRes(1,samp_min,samp_max,samp_num)
+            print("Resolution function set...")
+        if(what=='SOL_NO'):
+            lib.solSetRes(0,samp_min,samp_max,samp_num)
+            print("Resolution function wiil not be taken")
+        
+    
     def init_exp(self,experiment,which_type,channel):
 
         lib.solInitExp.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int]

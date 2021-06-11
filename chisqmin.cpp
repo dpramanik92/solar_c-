@@ -7,7 +7,7 @@
 #include "chisqmin.hpp"
 
 
-int chisq::chisq_real::Init_chisq_calculator(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat)
+int chisq::chisq_real::Init_chisq_calculator(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat,int _res_stat)
 {
     _event = event;
     
@@ -15,7 +15,10 @@ int chisq::chisq_real::Init_chisq_calculator(Event_generator event,file_reader e
    _exp_data = exp_data;
    
     sys_stat = _sys_stat;
+    res_stat = _res_stat;
 
+
+    
 //    _event.Init_evgen(fin_flav,particle,channel);
     
     for(int i=0;i<int(exp_data.data[0].size());i++)
@@ -32,6 +35,11 @@ int chisq::chisq_real::Init_chisq_calculator(Event_generator event,file_reader e
 //    _event.Init_fast_generator();
 //
     _event.Init_evgen(fin_flav,particle,channel);
+    if(res_stat==SOL_YES)
+    {
+        _event.Set_fast_event_generator(SOL_YES,sampl_min,sampl_max,numsamp);
+        _event.Init_fast_generator();
+    }
 //    
     
     
@@ -40,11 +48,23 @@ int chisq::chisq_real::Init_chisq_calculator(Event_generator event,file_reader e
     return 0;
 }
 
-int chisq::No_sys::Init(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat )
+int chisq::chisq_real::Set_sampling_points(double _samp_min,double _samp_max,int num)
+{
+    sampl_min = _samp_min;
+    sampl_max = _samp_max;
+    numsamp = num;
+    
+    return 0;
+}
+
+int chisq::No_sys::Init(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat,int _res_stat )
 {
     sys_stat = _sys_stat;
+    res_stat = _res_stat;
+    
+    
 
-    Init_chisq_calculator(event,exp_data,bkg_data,sys_stat);
+    Init_chisq_calculator(event,exp_data,bkg_data,sys_stat,res_stat);
 
 
     return 0;
@@ -368,12 +388,13 @@ double chisq::SK_IV::Function(vec sys_params)
     return res;
 }
 
-int chisq::SK_IV::Init(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat )
+int chisq::SK_IV::Init(Event_generator event,file_reader exp_data,file_reader bkg_data,int _sys_stat,int _res_stat )
 {
     sys_stat = _sys_stat;
+    res_stat = _res_stat;
     binned_sys = 0;
 
-    Init_chisq_calculator(event,exp_data,bkg_data,sys_stat);
+    Init_chisq_calculator(event,exp_data,bkg_data,sys_stat,res_stat);
 /*
     _event.Proba_engine.Tan_Th12 = params[0];
     _event.Proba_engine.Th13 = params[1];

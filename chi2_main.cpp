@@ -40,19 +40,19 @@ int main(int argc, const char * argv[]) {
     
     double E_max = 10.0;
 
-    string file_prefix = string(argv[1]);
+    string file_prefix = "test";//string(argv[1]);
 
-    string Experiment = string(argv[2]);
+    string Experiment = "Kamland";//string(argv[2]);
 
-    string which_type = string(argv[3]);
+    string which_type = "Scalar";//string(argv[3]);
 
-    const char* chan = argv[4];
+    int chan = 4;//argv[4];
 
   //  string delta = string(argv[4]);
     
   //  double _delta = atof(argv[4]);
 
-    string file_name = file_prefix +"_" + chan + "_" + Experiment + "_" + which_type + ".dat";
+    string file_name = file_prefix +"_" + to_string(chan) + "_" + Experiment + "_" + which_type + ".dat";
 
 
      cout<<"The output is being written to: "<<file_name<<endl;
@@ -71,10 +71,10 @@ int main(int argc, const char * argv[]) {
 
      Event_generator _event;
     
-     _event.resolution[0] = 0.0;
+  /*   _event.resolution[0] = 0.0;
      _event.resolution[1] = 0.06;
      _event.resolution[2] = 0.0;
-    
+   */
      _event.e_min = 1.8;
      _event.e_max = E_max;
      _event.n_bins = 100;
@@ -95,6 +95,10 @@ int main(int argc, const char * argv[]) {
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+         _event.resolution[0] = 0.0;
+         _event.resolution[1] = 0.0;
+         _event.resolution[2] = 0.0;
 
         double Time = 2970.1; /* days */
         Time = Time*86400;
@@ -115,6 +119,11 @@ int main(int argc, const char * argv[]) {
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+        _event.resolution[0] = 0.0;
+        _event.resolution[1] = 0.064;
+        _event.resolution[2] = 0.0;
+         
 
         double Time = 2343; /* days */
         Time = Time*86400;
@@ -135,6 +144,10 @@ int main(int argc, const char * argv[]) {
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+         _event.resolution[0] = 0.05;
+         _event.resolution[1]  = 0.0;
+         _event.resolution[2] = 0.0;
 
         double Time = 2485; /* days */
         Time = Time*86400;
@@ -155,12 +168,13 @@ int main(int argc, const char * argv[]) {
 
 
     
-     _event.res_stat = SOL_NO;
 
 
+
+    
      chisq::SK_IV chi2;
      chi2.fin_flav = 0;
-     chi2.channel = atoi(chan);
+     chi2.channel = chan;
      chi2.particle = -1;
 
      
@@ -190,7 +204,8 @@ int main(int argc, const char * argv[]) {
      
 
      chi2.Set_sys(0.2,0.2,0.05,0.05);
-     chi2.Init(_event,exp_data,bkg_data,SOL_NO);
+     chi2.Set_sampling_points(1.8,13.0,30);
+     chi2.Init(_event,exp_data,bkg_data,SOL_NO,SOL_YES);
      chi2.Set_binned_systematics(SOL_NO);
 
      chi2.statistics(start_values);

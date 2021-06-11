@@ -144,7 +144,7 @@ int main(int argc, const char * argv[]) {
     _event.Man_bins = SOL_YES;
     
     _event.Init_evgen(0,-1,3);
-    _event.res_stat = SOL_YES;
+    _event.res_stat = SOL_NO;
 
   //  _event.Set_probability_engine(scalar);
     _event.Set_fast_event_generator(SOL_YES,1.8,13.0,30);

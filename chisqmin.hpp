@@ -28,21 +28,24 @@ namespace chisq
     class chisq_real
     {
         private:
-      
-
+          
         public:
-            int sys_stat;
+            int sys_stat,res_stat;
+            double sampl_min,sampl_max,numsamp;
+
             dec_prob Proba_engine;
             file_reader _exp_data,_bkg_data;
             Event_generator _event;
             int fin_flav,channel,particle;
-            int Init_chisq_calculator(Event_generator,file_reader,file_reader,int);
+            int Init_chisq_calculator(Event_generator,file_reader,file_reader,int,
+                                      int);
+            int Set_sampling_points(double,double,int);
     };
 
     class No_sys: public chisq_real
     {
         public:
-        int Init(Event_generator,file_reader,file_reader,int);
+        int Init(Event_generator,file_reader,file_reader,int,int);
         double Calc_chi2_nosys(vec);
 
     };
@@ -60,7 +63,7 @@ namespace chisq
             vec sigma;
             int Set_binned_systematics(int);
             int Set_sys(double,double,double,double);
-            int Init(Event_generator,file_reader,file_reader,int);
+            int Init(Event_generator,file_reader,file_reader,int,int);
             int expected_rates(vec);
             double Function(vec);
             int statistics(vec);

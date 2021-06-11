@@ -31,6 +31,9 @@ class chi_sq
         Event_generator _event;
         string Experiment;
         int Channel;
+        int _sampnum;
+        int res_stat;
+        double sampmin,sampmax;
         string which_type;
         chisq::SK_IV chi2;
 
@@ -40,12 +43,22 @@ class chi_sq
 
     public:
         void solGetExpParams(string,string ,int);
+        void solSetResolution(int,double,double,int);
         void InitChi2Engine();
         double solCalculateChi2(double*);
 
 
     private:
 };
+
+void chi_sq::solSetResolution(int _res_stat,double _samp_min,double _samp_max,int _samp_num)
+{
+    res_stat = _res_stat;
+
+    sampmin = _samp_min;
+    sampmax = _samp_max;
+    _sampnum = _samp_num;
+}
 
 void chi_sq::solGetExpParams(string _expname,string _which_type,int _chan)
 {
@@ -84,6 +97,10 @@ void chi_sq::InitChi2Engine()
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+        _event.resolution[0] =0.0;
+         _event.resolution[1] =0.0;
+         _event.resolution[2] =0.0;
 
         double Time = 2970.1; /* days */
         Time = Time*86400;
@@ -104,6 +121,10 @@ void chi_sq::InitChi2Engine()
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+         _event.resolution[0] = 0.0;
+         _event.resolution[1] =0.064;
+         _event.resolution[2] =0.0;
 
         double Time = 2343; /* days */
         Time = Time*86400;
@@ -124,6 +145,10 @@ void chi_sq::InitChi2Engine()
 
         exp_data.read_file(data_file);
         bkg_data.read_file(bkg_file);
+         
+         _event.resolution[0] =0.05;
+         _event.resolution[1] =0.0;
+         _event.resolution[2] =0.0;
 
         double Time = 2485; /* days */
         Time = Time*86400;
@@ -143,9 +168,8 @@ void chi_sq::InitChi2Engine()
 
 
 
-     _event.res_stat = SOL_NO;
 
-
+    
      for(int i=0;i<16;i++)
      {
          start_values.push_back(0.0);
@@ -156,7 +180,8 @@ void chi_sq::InitChi2Engine()
      chi2.particle = -1;
 
      chi2.Set_sys(0.2,0.2,0.05,0.05);
-     chi2.Init(_event,exp_data,bkg_data,SOL_NO);
+     chi2.Set_sampling_points(sampmin,sampmax,_sampnum);
+     chi2.Init(_event,exp_data,bkg_data,SOL_NO,res_stat);
      chi2.Set_binned_systematics(SOL_NO);
      chi2.statistics(start_values);
     
@@ -193,6 +218,11 @@ double chi_sq::solCalculateChi2(double* params)
 extern "C"
 {
     chi_sq chi2;
+    void solSetRes(int _res_stat,double _samp_min,double _samp_max,int _samp_num)
+    {
+        chi2.solSetResolution(_res_stat,_samp_min,_samp_max,_samp_num);
+        
+    }
     void solInitExp(char* exp,char* which,int chan)
     {
         
@@ -202,6 +232,7 @@ extern "C"
         chi2.InitChi2Engine();
 
     }
+    
     double solChi2(double* fit_params)
     {
         double f = chi2.solCalculateChi2(fit_params);

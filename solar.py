@@ -53,6 +53,9 @@ class Optimize:
         self.s = sol.solchi2()
         self.s.init_exp(exp,which,chan)
 
+    def set_resolution(self,what,samp_min,samp_max,samp_num):
+        self.s.Set_resolution(what,samp_min,samp_max,samp_num)
+
     def take_cord(self,x,y):
         self.X = x
         self.Y = y
@@ -91,6 +94,7 @@ class Optimize:
 def get_curves(exp,which,chan):
 
     Opt = Optimize(exp,which,chan)
+    Opt.set_resolution('SOL_YES',1.8,13.0,30)
 
     min_bound = np.array([31.0,0.02,6.8])
     max_bound = np.array([36.5,0.024,8.2])
@@ -137,6 +141,7 @@ def get_curves(exp,which,chan):
 
 
 kam_data_sc4 = get_curves("Kamland","Scalar",4)
+
 bor_data_sc4 = get_curves("Borexino","Scalar",4)
 
 np.savetxt('Kamland_pseudo_margi_4',kam_data_sc4)
@@ -167,11 +172,11 @@ cs_bor_sc3 = data_set(bor_data_sc3,11.83)
 #cs_bor_sc5 = data_set(bor_data_sc5,11.83)
 
 fig,ax = plt.subplots()
-plt.text(0.8,0.1,r"3 $\sigma$ C.L.",font="Times New Roman",size=20,transform=ax.transAxes)
+plt.text(0.8,0.1,r"3 $\sigma$ C.L.",size=20,transform=ax.transAxes)
 
-ax.set_xlabel(r"$\tau/m$ [s/eV]",font="Times New Roman",size=20)
-ax.set_ylabel(r"$\delta$",font="Times New Roman",size=20)
-ax.set_title("Scalar; Marginalised",font="Times New Roman",size=20)
+ax.set_xlabel(r"$\tau/m$ [s/eV]",size=20)
+ax.set_ylabel(r"$\delta$",size=20)
+ax.set_title("Scalar; Marginalised",size=20)
 
 ax.set_xlim(1e-6,0.1)
 ax.set_xscale('log')
@@ -180,6 +185,7 @@ ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
 ax.plot(cs_kam_sc3.X,cs_kam_sc3.Y,color='r',
         label=r'Kamland;$\nu_{3}\rightarrow\bar{\nu}_{1}$',linewidth=2.0)
+
 ax.plot(cs_kam_sc4.X,cs_kam_sc4.Y,'--',color='r',
         label=r'Kamland;$\nu_{2}\rightarrow\bar{\nu}_{3}$',linewidth=2.0)
 #ax.plot(cs_kam_sc5.X,cs_kam_sc5.Y,'-.',color='r',
@@ -193,7 +199,7 @@ ax.plot(cs_bor_sc4.X,cs_bor_sc4.Y,'--',color='g',
 #ax.plot(cs_bor_sc5.X,cs_bor_sc5.Y,'-.',color='g',
 #        label=r'Borexino;$\nu_{1}\rightarrow\bar{\nu}_{3}$',linewidth=2.0)
 
-plt.legend()
+#plt.legend()
 #plt.show()
-plt.savefig("../plots/compare_scalar_margi_diff_chan2.eps")
+plt.savefig("../plots/compare_scalar_margi_no_res_chan.eps")
 

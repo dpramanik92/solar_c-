@@ -27,11 +27,12 @@ int Event_generator::Init_evgen(int flav,int parti, int channel)
 	sys_stat=SOL_YES;
 //	res_stat=SOL_YES;
 	FAST_GEN = SOL_NO;
-	
+
 	norm = Normalization*Exposure;
 
 
     create_bins();
+
     //~ find_sigma();
     //~ create_smearing_matrix();
     
@@ -69,6 +70,8 @@ int Event_generator::Init_fast_generator()
 int Event_generator::Set_fast_event_generator(int what,double _min,double _max,int _num)
 {
     FAST_GEN = what;
+    res_stat = what;
+    
     
     samp_min = _min;
     samp_max = _max;
@@ -155,7 +158,7 @@ int Event_generator::generate_events()
 {
     
     Events.clear();
-
+    
 
 	if(res_stat==SOL_YES)
 	{
@@ -210,11 +213,7 @@ int Event_generator::generate_events()
     			    		term = Proba_engine.Calculate_decayed_flux((samplings[j]+1.3),_flavour,_particle,_channel)*cross_interpolator.interpolate(log10(samplings[j])*1e-3)*(samplings[j])*smear_mat[i][j]*sampling_space;
 
 
-    			    //		double term2 = Proba_engine.Calculate_decayed_flux((samplings[j+1]+1.3),_flavour,_particle,_channel)*cross_interpolator.interpolate(log10(samplings[j+1])*1e-3)*(samplings[j+1])*smear_mat[i][j];
-
-//                            term = 0.5*(term1+term2)*sampling_space;
-                  //          std::cout<<bin_center[i]<<"\t"<<samplings[j]<<"\t"<<term<<std::endl;
-                        }
+    			         }
                         else
                         {
                             term = 0;
@@ -311,7 +310,6 @@ int Event_generator::create_bins()
 	}
 	if(Man_bins == SOL_YES)
 	{
-        
 		for(int i=0;i<manual_bins.size()-1;i++)
 		{
 			
